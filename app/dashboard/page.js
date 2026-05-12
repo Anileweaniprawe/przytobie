@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { PT } from '@/lib/theme';
 import {
   FindClinic, Checklist, ChatScreen, DocumentsScreen,
-  BookVisit, ReportSymptom, MyResults, SupportScreen, RehabPlan,
+  BookVisit, ReportSymptom, MyResults, SupportScreen, RehabPlan, PartnersScreen,
 } from '@/components/screens';
 
 // ─── SVG icon set ─────────────────────────────────────────────
@@ -550,7 +550,7 @@ function DashboardContent() {
       'Wsparcie':                () => setScreen('support'),
       'Plan rehabilitacji':      () => setScreen('rehab-plan'),
       'Grupy wsparcia':          () => setScreen('support'),
-      'Zadbaj o siebie':         () => setScreen('support'),
+      'Zadbaj o siebie':         () => setScreen('partners'),
     };
     nav[label]?.();
   }
@@ -564,6 +564,7 @@ function DashboardContent() {
   if (screen === 'my-results')     return <MyResults onBack={back}/>;
   if (screen === 'support')        return <SupportScreen onBack={back}/>;
   if (screen === 'rehab-plan')     return <RehabPlan onBack={back}/>;
+  if (screen === 'partners')       return <PartnersScreen onBack={back} onOpenChat={() => setScreen('chat')}/>;
 
   return (
     <>

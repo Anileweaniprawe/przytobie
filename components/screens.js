@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { PT } from '@/lib/theme';
 
 // ─── Icons ────────────────────────────────────────────────────
@@ -22,7 +22,10 @@ function Icon({ name, size = 20, color, sw = 1.8 }) {
     chart:     <><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>,
     users:     <><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></>,
     sparkle:   <><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z"/></>,
-    textfile:  <><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></>,
+    textfile:     <><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></>,
+    mapPin:       <><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></>,
+    externalLink: <><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></>,
+    search:       <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,
   };
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -908,5 +911,419 @@ export function RehabPlan({ onBack }) {
         ))}
       </div>
     </Wrap>
+  );
+}
+
+// ─── 10. PartnersScreen ───────────────────────────────────────
+
+const PARTNER_FILTERS = ['Wszystkie', 'Tatuaż medyczny', 'Peruki', 'Wsparcie psychologiczne', 'Rehabilitacja'];
+
+const PARTNERS = [
+  {
+    id: 1,
+    name: 'Studio Tatuażu Medycznego — Aneta Kowalska',
+    category: 'Tatuaż medyczny',
+    location: 'Warszawa, Mokotów',
+    description: 'Specjalizacja: rekonstrukcja areoli po mastektomii. Doświadczenie 8 lat, współpraca z oddziałami onkologicznymi.',
+    badge: 'Polecane przez BCU',
+    badgeColor: '#C96E7A',
+    phone: '+48 600 000 001',
+    bookingType: 'phone',
+    tags: ['Tatuaż medyczny'],
+  },
+  {
+    id: 2,
+    name: 'MedInk — Tatuaż Onkologiczny',
+    category: 'Tatuaż medyczny',
+    location: 'Kraków, Śródmieście',
+    description: 'Tatuaż paramedyczny i rekonstrukcja. Bezpłatna konsultacja wstępna. NFZ: usługa prywatna.',
+    badge: null,
+    phone: '+48 600 000 002',
+    bookingType: 'booksy',
+    booksyUrl: 'https://booksy.com/pl-pl/s/pl/tattoo?q=tatua%C5%BC+medyczny+krak%C3%B3w',
+    tags: ['Tatuaż medyczny'],
+  },
+  {
+    id: 3,
+    name: 'Peruki Onkologiczne — Dom Mody Sylwia',
+    category: 'Peruki',
+    location: 'Warszawa, Wola',
+    description: 'Peruki naturalne i syntetyczne dla kobiet w trakcie i po chemioterapii. Możliwość dofinansowania z NFZ.',
+    badge: 'Dofinansowanie NFZ',
+    badgeColor: '#6B9E9E',
+    phone: '+48 600 000 003',
+    bookingType: 'phone',
+    tags: ['Peruki'],
+  },
+  {
+    id: 4,
+    name: 'Oncohair Polska',
+    category: 'Peruki',
+    location: 'Gdańsk / online',
+    description: 'Peruki onkologiczne, akcesoria, chusty. Sklep online i salon stacjonarny. Wysyłka w 24h.',
+    badge: null,
+    phone: null,
+    bookingType: 'url',
+    externalUrl: 'https://oncohair.pl',
+    tags: ['Peruki'],
+  },
+  {
+    id: 5,
+    name: 'Fundacja OmeaLife — Wsparcie Psychologiczne',
+    category: 'Wsparcie psychologiczne',
+    location: 'Gdańsk + online',
+    description: 'Bezpłatne konsultacje z psychoonkologiem dla kobiet z rakiem piersi. Zapisy przez fundację.',
+    badge: 'Bezpłatne',
+    badgeColor: '#A8C5A0',
+    phone: '575 752 763',
+    bookingType: 'url',
+    externalUrl: 'https://omealife.pl',
+    tags: ['Wsparcie psychologiczne'],
+  },
+  {
+    id: 6,
+    name: 'OnkoCafe — Klub Pacjenta',
+    category: 'Wsparcie psychologiczne',
+    location: 'Warszawa + online',
+    description: 'Grupy wsparcia, warsztaty, psycholog, dietetyk. Spotkania stacjonarne i online dla pacjentek w każdym etapie.',
+    badge: 'Bezpłatne',
+    badgeColor: '#A8C5A0',
+    phone: null,
+    bookingType: 'url',
+    externalUrl: 'https://onkocafe.pl',
+    tags: ['Wsparcie psychologiczne'],
+  },
+  {
+    id: 7,
+    name: 'Fizjoterapia Onkologiczna — Centrum Zdrowia',
+    category: 'Rehabilitacja',
+    location: 'Warszawa, Ursynów',
+    description: 'Fizjoterapia po mastektomii, drenaż limfatyczny, ćwiczenia ramienia. NFZ i prywatnie.',
+    badge: 'NFZ + prywatnie',
+    badgeColor: '#6B9E9E',
+    phone: '+48 600 000 007',
+    bookingType: 'booksy',
+    booksyUrl: 'https://booksy.com/pl-pl/s/pl/physiotherapy',
+    tags: ['Rehabilitacja'],
+  },
+  {
+    id: 8,
+    name: 'Amazonki — Grupy Wsparcia',
+    category: 'Wsparcie psychologiczne',
+    location: '210 klubów w całej Polsce',
+    description: 'Największa sieć wsparcia dla kobiet po raku piersi. Znajdź klub w swoim mieście.',
+    badge: 'Bezpłatne',
+    badgeColor: '#A8C5A0',
+    phone: '+48 790 324 914',
+    bookingType: 'url',
+    externalUrl: 'https://amazonkifederacja.pl',
+    tags: ['Wsparcie psychologiczne'],
+  },
+];
+
+const TEAL = '#4A8E8E';
+const TEAL_BORDER = '#6B9E9E';
+
+function ActionButtons({ partner, onOpenChat }) {
+  const btnBase = {
+    appearance: 'none', cursor: 'pointer',
+    fontFamily: 'var(--font-manrope), system-ui',
+    fontSize: 13, fontWeight: 600,
+    height: 38, borderRadius: 19,
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+  };
+
+  if (partner.bookingType === 'phone') {
+    return (
+      <div style={{ display: 'flex', gap: 8 }}>
+        <a href={`tel:${partner.phone}`} style={{
+          flex: 1, textDecoration: 'none',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          height: 38, borderRadius: 19,
+          border: `1.5px solid ${PT.plum}`,
+          color: PT.plum,
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 13, fontWeight: 600,
+        }}>
+          <Icon name="phone" size={13} color={PT.plum}/>
+          Zadzwoń
+        </a>
+        <button
+          onClick={onOpenChat}
+          style={{ ...btnBase, flex: 1, border: 0, background: '#C96E7A', color: '#fff' }}
+        >
+          <Icon name="chat" size={13} color="#fff"/>
+          Zapytaj
+        </button>
+      </div>
+    );
+  }
+
+  if (partner.bookingType === 'booksy') {
+    return (
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          onClick={() => window.open(partner.booksyUrl, '_blank')}
+          style={{ ...btnBase, flex: 1, border: 0, background: TEAL, color: '#fff' }}
+        >
+          Umów przez Booksy
+        </button>
+        {partner.phone && (
+          <a href={`tel:${partner.phone}`} style={{
+            flexShrink: 0, textDecoration: 'none',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            height: 38, borderRadius: 19,
+            paddingLeft: 14, paddingRight: 14,
+            border: `1.5px solid ${PT.plum}`,
+            color: PT.plum,
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontSize: 13, fontWeight: 600,
+          }}>
+            <Icon name="phone" size={13} color={PT.plum}/>
+            Zadzwoń
+          </a>
+        )}
+      </div>
+    );
+  }
+
+  if (partner.bookingType === 'url') {
+    return (
+      <button
+        onClick={() => window.open(partner.externalUrl, '_blank')}
+        style={{
+          ...btnBase,
+          width: '100%', border: `1.5px solid ${TEAL_BORDER}`,
+          background: 'transparent', color: TEAL,
+        }}
+      >
+        Odwiedź stronę
+        <Icon name="externalLink" size={13} color={TEAL}/>
+      </button>
+    );
+  }
+
+  return null;
+}
+
+function PartnerCard({ partner, isExpanded, onToggle, onOpenChat }) {
+  return (
+    <div style={{
+      background: '#fff',
+      borderRadius: 20,
+      padding: '16px 16px 14px',
+      boxShadow: '0 1px 8px rgba(58,42,63,0.07)',
+    }}>
+      {/* category + badge */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between',
+        alignItems: 'center', gap: 8, marginBottom: 10,
+      }}>
+        <span style={{
+          background: '#F5EEF0', color: '#C96E7A',
+          borderRadius: 10, padding: '3px 10px',
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 11, fontWeight: 600, flexShrink: 0,
+        }}>{partner.category}</span>
+        {partner.badge && (
+          <span style={{
+            background: partner.badgeColor, color: '#fff',
+            borderRadius: 999, padding: '3px 10px',
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontSize: 11, fontWeight: 600, flexShrink: 0,
+          }}>{partner.badge}</span>
+        )}
+      </div>
+
+      {/* name */}
+      <div style={{
+        fontFamily: 'var(--font-manrope), system-ui',
+        fontWeight: 600, fontSize: 15,
+        color: PT.plum, letterSpacing: '-0.01em',
+        lineHeight: 1.35, marginBottom: 6,
+      }}>{partner.name}</div>
+
+      {/* location */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 10 }}>
+        <Icon name="mapPin" size={12} color="rgba(58,42,63,0.4)" sw={1.6}/>
+        <span style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 12, color: 'rgba(58,42,63,0.5)',
+        }}>{partner.location}</span>
+      </div>
+
+      {/* description with clamp */}
+      <div style={{ marginBottom: 14 }}>
+        <p style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 13, lineHeight: 1.55,
+          color: 'rgba(58,42,63,0.65)',
+          margin: 0,
+          ...(!isExpanded ? {
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          } : {}),
+        }}>{partner.description}</p>
+        <button
+          onClick={onToggle}
+          style={{
+            appearance: 'none', border: 0, background: 'none',
+            padding: 0, marginTop: 3, cursor: 'pointer',
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontSize: 12, fontWeight: 600, color: '#C96E7A',
+          }}
+        >{isExpanded ? 'mniej' : 'więcej'}</button>
+      </div>
+
+      <ActionButtons partner={partner} onOpenChat={onOpenChat}/>
+    </div>
+  );
+}
+
+export function PartnersScreen({ onBack, onOpenChat }) {
+  const [activeFilter, setActiveFilter] = useState('Wszystkie');
+  const [expanded, setExpanded] = useState({});
+  const topRef = useRef(null);
+
+  const filtered = activeFilter === 'Wszystkie'
+    ? PARTNERS
+    : PARTNERS.filter(p => p.tags.includes(activeFilter));
+
+  function changeFilter(f) {
+    setActiveFilter(f);
+    topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  return (
+    <div className="page-bg screen-enter" style={{ width: '100%', minHeight: '100dvh' }}>
+      <style>{`.pt-chips::-webkit-scrollbar { display: none; }`}</style>
+      <div ref={topRef}/>
+      <ScreenHeader title="Opieka po leczeniu" onBack={onBack}/>
+
+      {/* intro */}
+      <div style={{ paddingLeft: 20, paddingRight: 20, marginBottom: 14 }}>
+        <p style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 13, color: 'rgba(58,42,63,0.5)',
+          lineHeight: 1.5, margin: 0,
+        }}>
+          Sprawdzone miejsca i usługi dla kobiet po leczeniu raka piersi.
+        </p>
+      </div>
+
+      {/* filter chips */}
+      <div
+        className="pt-chips"
+        style={{
+          display: 'flex', gap: 8,
+          overflowX: 'auto',
+          paddingLeft: 20, paddingRight: 20, paddingBottom: 2,
+          scrollbarWidth: 'none',
+        }}
+      >
+        {PARTNER_FILTERS.map(f => (
+          <button
+            key={f}
+            onClick={() => changeFilter(f)}
+            style={{
+              flexShrink: 0, height: 34, borderRadius: 17,
+              paddingLeft: 14, paddingRight: 14,
+              appearance: 'none', cursor: 'pointer',
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontSize: 13, fontWeight: 500,
+              background: activeFilter === f ? '#C96E7A' : '#fff',
+              color: activeFilter === f ? '#fff' : '#6B6B6B',
+              border: activeFilter === f ? 'none' : '1px solid #E0E0E0',
+              transition: 'background 0.15s, color 0.15s',
+            }}
+          >{f}</button>
+        ))}
+      </div>
+
+      {/* cards */}
+      <div style={{ paddingLeft: 20, paddingRight: 20, marginTop: 18, paddingBottom: 100 }}>
+        {filtered.length === 0 ? (
+          <div style={{
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', textAlign: 'center',
+            padding: '52px 0', gap: 16,
+          }}>
+            <div style={{
+              width: 60, height: 60, borderRadius: 30,
+              background: 'rgba(58,42,63,0.06)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Icon name="search" size={26} color="rgba(58,42,63,0.25)" sw={1.6}/>
+            </div>
+            <div>
+              <p style={{
+                fontFamily: 'var(--font-manrope), system-ui',
+                fontWeight: 600, fontSize: 15,
+                color: PT.plum, marginBottom: 6,
+              }}>Brak wyników dla tej kategorii</p>
+              <p style={{
+                fontFamily: 'var(--font-manrope), system-ui',
+                fontSize: 13, color: 'rgba(58,42,63,0.5)',
+                lineHeight: 1.5, margin: 0,
+              }}>Zapytaj asystentkę — pomoże znaleźć odpowiednie miejsce</p>
+            </div>
+            <button
+              onClick={onOpenChat}
+              style={{
+                appearance: 'none', border: 0,
+                background: PT.plum, color: PT.cream,
+                height: 44, borderRadius: 22,
+                paddingLeft: 22, paddingRight: 22,
+                fontFamily: 'var(--font-manrope), system-ui',
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                boxShadow: '0 8px 20px -6px rgba(58,42,63,0.3)',
+              }}
+            >Zapytaj asystentkę</button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {filtered.map(p => (
+              <PartnerCard
+                key={p.id}
+                partner={p}
+                isExpanded={!!expanded[p.id]}
+                onToggle={() => setExpanded(prev => ({ ...prev, [p.id]: !prev[p.id] }))}
+                onOpenChat={onOpenChat}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* sticky bottom bar */}
+      <div style={{
+        position: 'sticky', bottom: 0,
+        paddingTop: 20, paddingLeft: 20, paddingRight: 20,
+        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 20px)',
+        background: 'linear-gradient(to bottom, transparent 0%, rgba(251,245,238,0.94) 32%, rgba(251,245,238,0.99) 100%)',
+      }}>
+        <button
+          onClick={onOpenChat}
+          style={{
+            width: '100%', height: 50,
+            appearance: 'none',
+            border: '1px solid #E0E0E0',
+            background: '#fff',
+            borderRadius: 25,
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontSize: 15, fontWeight: 600,
+            color: '#C96E7A',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            boxShadow: '0 2px 12px rgba(58,42,63,0.08)',
+          }}
+        >
+          <Icon name="chat" size={16} color="#C96E7A"/>
+          Nie znalazłaś? Zapytaj asystentkę
+        </button>
+      </div>
+    </div>
   );
 }
