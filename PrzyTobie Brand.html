@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PrzyTobie — Wizualizacja marki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet"/>
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; font-family: 'Manrope', system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="brand.jsx"></script>
+<script type="text/babel">
+
+function PrimaryLockupLight() {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.cream,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 60, position: 'relative',
+    }}>
+      {/* subtle warm halo */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: `radial-gradient(60% 60% at 50% 50%, ${PT.blush}30 0%, transparent 70%)`,
+      }}/>
+      <div style={{ position: 'relative' }}>
+        <Lockup iconSize={120} wordSize={84} gap={28}/>
+      </div>
+    </div>
+  );
+}
+
+function PrimaryLockupDark() {
+  return (
+    <div style={{
+      width: '100%', height: '100%',
+      background: `radial-gradient(120% 80% at 30% 20%, #3a2842 0%, ${PT.night} 70%)`,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 60,
+    }}>
+      <Lockup iconSize={120} wordSize={84} gap={28} dark
+              palette={{ outer: PT.blush, inner: PT.lilac, accent: PT.salmon }}/>
+    </div>
+  );
+}
+
+function StackedLockup() {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.paper,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40,
+    }}>
+      <StackLockup iconSize={150} wordSize={50}/>
+    </div>
+  );
+}
+
+function MonochromeBoard() {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.cream,
+      display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
+    }}>
+      <div style={{ background: PT.cream, display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', padding: 40, gap: 24, flexDirection: 'column' }}>
+        <Mark size={120} mono={PT.plum}/>
+        <Wordmark size={36} color={PT.plum}/>
+        <div style={{ fontFamily: '"Manrope"', fontSize: 11, color: 'rgba(58,42,63,0.55)',
+                      textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+          1-kolor · ciemny
+        </div>
+      </div>
+      <div style={{ background: PT.plum, display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', padding: 40, gap: 24, flexDirection: 'column' }}>
+        <Mark size={120} mono={PT.cream}/>
+        <Wordmark size={36} color={PT.cream}/>
+        <div style={{ fontFamily: '"Manrope"', fontSize: 11, color: 'rgba(251,245,238,0.55)',
+                      textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+          1-kolor · jasny
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IconGrid() {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.cream,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40,
+    }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 40 }}>
+        <AppIcon size={140}
+          gradient={`radial-gradient(120% 100% at 20% 10%, ${PT.cream} 0%, ${PT.blush} 100%)`}
+          outer={PT.salmonDeep} inner={PT.plum} accent={PT.lilacDeep}
+          label="Pudrowy" sublabel="Główny"/>
+        <AppIcon size={140}
+          gradient={`radial-gradient(120% 100% at 20% 10%, ${PT.paper} 0%, ${PT.lilac} 100%)`}
+          outer={PT.plumSoft} inner={PT.cream} accent={PT.salmonDeep}
+          label="Lawendowy" sublabel="Alternatywny"/>
+        <AppIcon size={140}
+          gradient={`linear-gradient(155deg, ${PT.salmon} 0%, ${PT.blush} 50%, ${PT.lilac} 100%)`}
+          outer={PT.cream} inner={PT.plum} accent={PT.plum}
+          label="Wschód" sublabel="Splash"/>
+        <AppIcon size={140} bg={PT.cream}
+          outer={PT.blush} inner={PT.lilacDeep} accent={PT.salmonDeep}
+          label="Jasny" sublabel="Web favicon"/>
+        <AppIcon size={140} bg={PT.plum}
+          outer={PT.blush} inner={PT.cream} accent={PT.salmon}
+          label="Ciemny" sublabel="Dark mode"/>
+        <AppIcon size={140} bg={PT.cream}
+          mono={PT.plum}
+          label="Mono" sublabel="Print / 1-bit"/>
+      </div>
+    </div>
+  );
+}
+
+function PaletteBoard() {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.cream,
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      padding: '40px 48px', gap: 32,
+    }}>
+      <div style={{
+        fontFamily: '"Newsreader", Georgia, serif', fontStyle: 'italic',
+        fontSize: 26, color: PT.plumSoft, letterSpacing: '-0.01em',
+      }}>
+        Kolory ciepłe, miękkie, ludzkie — bez agresywnego różu.
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 24 }}>
+        <Swatch name="Krem"     hex={PT.cream}     oklch="oklch(0.97 0.012 70)"  role="Tło · podstawa"/>
+        <Swatch name="Pudrowy"  hex={PT.blush}     oklch="oklch(0.85 0.045 15)"  role="Marka · ciepło"/>
+        <Swatch name="Lawenda"  hex={PT.lilac}     oklch="oklch(0.78 0.04 310)"  role="Spokój · refleksja"/>
+        <Swatch name="Łosoś"    hex={PT.salmon}    oklch="oklch(0.74 0.105 30)"  role="Akcent · CTA"/>
+        <Swatch name="Aubergine"hex={PT.plum}      oklch="oklch(0.31 0.04 340)"  role="Tekst · głębia"/>
+        <Swatch name="Papier"   hex={PT.paper}     oklch="oklch(0.93 0.018 65)"  role="Karty · powierzchnia"/>
+      </div>
+      <div style={{
+        marginTop: 8, fontFamily: '"Manrope", system-ui', fontSize: 12,
+        color: 'rgba(58,42,63,0.55)', lineHeight: 1.6, maxWidth: 720,
+      }}>
+        Wszystkie pary spełniają WCAG AA dla tekstu UI: <b>Aubergine na Kremie</b> 12.4:1,
+        <b> Aubergine na Pudrowym</b> 9.1:1, <b>Krem na Aubergine</b> 12.4:1.
+        Łosoś używany wyłącznie jako akcent (przyciski, stan aktywny), nigdy jako tło dla tekstu długiego.
+      </div>
+    </div>
+  );
+}
+
+function TypeBoard() {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.cream,
+      padding: '40px 56px',
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 24, marginBottom: 12 }}>
+        <div style={{
+          fontFamily: '"Newsreader"', fontStyle: 'italic', fontSize: 30, color: PT.plum,
+          letterSpacing: '-0.015em',
+        }}>Typografia</div>
+        <div style={{
+          fontFamily: '"Manrope"', fontSize: 13, color: 'rgba(58,42,63,0.55)',
+        }}>Manrope + Newsreader · pełna obsługa polskich znaków</div>
+      </div>
+      <TypeRow label="Display"  family="Newsreader" weight={500} size={56} italic lh={1.05}
+               sample="Jesteś tu. Jestem z Tobą."/>
+      <TypeRow label="Headline" family="Manrope"    weight={600} size={32}
+               sample="Twoja ścieżka, krok po kroku"/>
+      <TypeRow label="Body"     family="Manrope"    weight={400} size={17} lh={1.5}
+               sample="Zaplanujemy razem każdy etap — od pierwszej wizyty po powrót do codzienności."/>
+      <TypeRow label="Caption"  family="Manrope"    weight={500} size={13}
+               sample="Następne badanie · czwartek, 14:30"/>
+      <TypeRow label="Mono"     family="Manrope"    weight={500} size={13}
+               sample="Zażółć gęślą jaźń — ĄĆĘŁŃÓŚŹŻ ąćęłńóśźż"/>
+    </div>
+  );
+}
+
+function VoiceBoard() {
+  return (
+    <div style={{
+      width: '100%', height: '100%',
+      background: `linear-gradient(155deg, ${PT.cream} 0%, ${PT.paper} 100%)`,
+      padding: 56, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48,
+    }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, justifyContent: 'center' }}>
+        <div style={{
+          fontFamily: '"Newsreader"', fontStyle: 'italic', fontSize: 38,
+          color: PT.plum, lineHeight: 1.15, letterSpacing: '-0.02em',
+        }}>Mówimy jak ktoś,<br/>kto naprawdę jest obok.</div>
+        <div style={{
+          fontFamily: '"Manrope"', fontSize: 16, lineHeight: 1.6,
+          color: PT.plumSoft, maxWidth: 480,
+        }}>
+          Ciepło bez sentymentalizmu. Konkretnie, ale nie klinicznie.
+          Nigdy nie zaczynamy zdania od „pacjentko". Zawsze imieniem,
+          albo „Ty".
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18, justifyContent: 'center' }}>
+        {[
+          { yes: 'Wiem, że to dużo. Zacznijmy od jednej rzeczy.',
+            no:  'Pacjentka powinna zapoznać się z procedurą.' },
+          { yes: 'Twoje wyniki są gotowe. Przeczytamy je razem?',
+            no:  'Wyniki dostępne. Kliknij, aby wyświetlić.' },
+          { yes: 'Dziś nie musisz nic robić. Po prostu odpocznij.',
+            no:  'Brak zaplanowanych zadań na dziś.' },
+        ].map((p, i) => (
+          <div key={i} style={{
+            display: 'flex', flexDirection: 'column', gap: 8,
+            background: PT.cream, borderRadius: 16, padding: '18px 20px',
+            boxShadow: '0 1px 0 rgba(58,42,63,0.06)',
+          }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <div style={{
+                width: 18, height: 18, borderRadius: 9, background: PT.salmon,
+                flexShrink: 0, marginTop: 3, display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="10" height="10" viewBox="0 0 10 10">
+                  <path d="M2 5l2 2 4-5" fill="none" stroke={PT.cream}
+                        strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div style={{
+                fontFamily: '"Newsreader"', fontStyle: 'italic', fontSize: 17,
+                color: PT.plum, lineHeight: 1.4,
+              }}>„{p.yes}"</div>
+            </div>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', opacity: 0.5 }}>
+              <div style={{
+                width: 18, height: 18, borderRadius: 9,
+                border: `1.5px solid ${PT.plumSoft}`,
+                flexShrink: 0, marginTop: 3, display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="8" height="8" viewBox="0 0 8 8">
+                  <path d="M1 1l6 6M7 1l-6 6" stroke={PT.plumSoft} strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div style={{
+                fontFamily: '"Manrope"', fontSize: 14, color: PT.plumSoft,
+                textDecoration: 'line-through', textDecorationColor: 'rgba(58,42,63,0.3)',
+                lineHeight: 1.4,
+              }}>{p.no}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PhoneArtboard({ children }) {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.paper,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 30,
+    }}>
+      <IOSDevice width={340} height={736}>
+        {children}
+      </IOSDevice>
+    </div>
+  );
+}
+
+function VariantCard({ variant, title, blurb, recommended }) {
+  return (
+    <div style={{
+      flex: 1, background: PT.cream, borderRadius: 20, padding: 28,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18,
+      position: 'relative',
+      boxShadow: recommended
+        ? `0 0 0 2px ${PT.salmonDeep}, 0 12px 28px -16px ${PT.salmonDeep}`
+        : '0 1px 0 rgba(58,42,63,0.06)',
+    }}>
+      {recommended && (
+        <div style={{
+          position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
+          background: PT.salmonDeep, color: PT.cream,
+          fontFamily: '"Manrope"', fontSize: 10, fontWeight: 700,
+          textTransform: 'uppercase', letterSpacing: '0.12em',
+          padding: '4px 10px', borderRadius: 10,
+        }}>Polecany</div>
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: 140, height: 140 }}>
+        <Mark size={130} variant={variant}/>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Mark size={32} variant={variant}/>
+        <Mark size={20} variant={variant}/>
+        <Mark size={14} variant={variant}/>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{
+          fontFamily: '"Manrope"', fontSize: 15, fontWeight: 600,
+          color: PT.plum, letterSpacing: '-0.005em',
+        }}>{title}</div>
+        <div style={{
+          fontFamily: '"Newsreader"', fontStyle: 'italic', fontSize: 13,
+          color: PT.plumSoft, marginTop: 6, lineHeight: 1.45,
+        }}>{blurb}</div>
+      </div>
+    </div>
+  );
+}
+
+function VariantsBoard() {
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.paper,
+      padding: 32, display: 'flex', flexDirection: 'column', gap: 18,
+    }}>
+      <div>
+        <div style={{
+          fontFamily: '"Manrope"', fontSize: 11, fontWeight: 600,
+          color: PT.plum, textTransform: 'uppercase', letterSpacing: '0.12em',
+        }}>Eksploracja znaku · wybierz kierunek</div>
+        <div style={{
+          fontFamily: '"Newsreader"', fontStyle: 'italic', fontSize: 22,
+          color: PT.plumSoft, marginTop: 6, letterSpacing: '-0.01em',
+        }}>
+          Bez geometrii, która mogłaby przywoływać anatomię.
+          Trzy kierunki, każdy mówi „jestem obok" inaczej.
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 18, flex: 1 }}>
+        <VariantCard variant="embrace" recommended
+          title="Objęcie"
+          blurb="Dwie pochylone ku sobie formy. Serce w przestrzeni między nimi — bliskość."/>
+        <VariantCard variant="hands"
+          title="Dłonie"
+          blurb="Dwie złożone dłonie trzymają serce. Czułość, ochrona, opieka."/>
+        <VariantCard variant="path"
+          title="Ścieżka"
+          blurb={'Cztery kroki po łagodnym łuku. Dosłownie — „na każdym kroku".'}/>
+      </div>
+    </div>
+  );
+}
+
+function ConstructionBoard() {
+  const G = 'rgba(58,42,63,0.22)';
+  const M = 'rgba(216,122,96,0.75)';
+  return (
+    <div style={{
+      width: '100%', height: '100%', background: PT.cream,
+      display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+        <svg viewBox="0 0 120 120" width={300} height={300}>
+          {/* grid */}
+          {[0,15,30,45,60,75,90,105,120].map(v => (
+            <React.Fragment key={v}>
+              <line x1={v} y1={0} x2={v} y2={120} stroke={G} strokeWidth="0.25" strokeDasharray="1.5 2"/>
+              <line x1={0} y1={v} x2={120} y2={v} stroke={G} strokeWidth="0.25" strokeDasharray="1.5 2"/>
+            </React.Fragment>
+          ))}
+          {/* mark */}
+          <g transform="translate(46 72) rotate(-14)">
+            <path d="M 0 -38 C -16 -38, -20 -12, -10 18 Q 0 26 10 18 C 20 -12, 16 -38, 0 -38 Z" fill={PT.blush}/>
+          </g>
+          <g transform="translate(74 72) rotate(14)">
+            <path d="M 0 -38 C -16 -38, -20 -12, -10 18 Q 0 26 10 18 C 20 -12, 16 -38, 0 -38 Z" fill={PT.lilacDeep}/>
+          </g>
+          <path d="M 60 26 C 55 20, 46 22, 46 31 C 46 41, 60 50, 60 50 C 60 50, 74 41, 74 31 C 74 22, 65 20, 60 26 Z" fill={PT.salmonDeep}/>
+          {/* overlays — axes of lean */}
+          <line x1="46" y1="100" x2="46" y2="34" stroke={M} strokeWidth="0.4" strokeDasharray="1.5 2" transform="rotate(-14 46 72)"/>
+          <line x1="74" y1="100" x2="74" y2="34" stroke={M} strokeWidth="0.4" strokeDasharray="1.5 2" transform="rotate(14 74 72)"/>
+          <circle cx="46" cy="72" r="1" fill={M}/>
+          <circle cx="74" cy="72" r="1" fill={M}/>
+          {/* heart center */}
+          <circle cx="60" cy="36" r="1" fill={M}/>
+          {/* angle markers */}
+          <text x="50" y="98" fontFamily="ui-monospace" fontSize="3.2" fill={M}>14°</text>
+          <text x="68" y="98" fontFamily="ui-monospace" fontSize="3.2" fill={M}>14°</text>
+          <text x="56" y="20" fontFamily="ui-monospace" fontSize="3.2" fill={M}>♥ centralnie</text>
+        </svg>
+      </div>
+      <div style={{
+        padding: 40, display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', gap: 20,
+      }}>
+        <div style={{
+          fontFamily: '"Manrope"', fontSize: 11, fontWeight: 600,
+          color: PT.plum, textTransform: 'uppercase', letterSpacing: '0.12em',
+        }}>Konstrukcja znaku · Objęcie</div>
+        <div style={{
+          fontFamily: '"Newsreader"', fontStyle: 'italic', fontSize: 28,
+          color: PT.plum, lineHeight: 1.2, letterSpacing: '-0.015em',
+        }}>Dwie obecności,<br/>jedno serce pomiędzy.</div>
+        <div style={{
+          fontFamily: '"Manrope"', fontSize: 14, lineHeight: 1.6,
+          color: PT.plumSoft, maxWidth: 360,
+        }}>
+          <b style={{ color: PT.plum }}>Dwie formy</b> — miękkie, organiczne, każda przechylona
+          14° ku drugiej. Czytają się jako dwie osoby w półobjęciu — Ty i ktoś przy Tobie.<br/><br/>
+          <b style={{ color: PT.plum }}>Serce w środku</b> — wyłania się z przestrzeni między
+          nimi. Akcent, nie ozdoba.<br/><br/>
+          <b style={{ color: PT.plum }}>Brak osi symetrii</b> przez środek formy — celowo,
+          żeby uniknąć skojarzeń anatomicznych.
+        </div>
+        <div style={{
+          marginTop: 8, display: 'flex', gap: 20, alignItems: 'center',
+        }}>
+          <Mark size={64}/>
+          <Mark size={40}/>
+          <Mark size={24}/>
+          <Mark size={16}/>
+          <div style={{ fontFamily: '"Manrope"', fontSize: 11, color: 'rgba(58,42,63,0.55)' }}>
+            ↑ czytelny od 16 px
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <DesignCanvas>
+      <DCSection id="variants" title="Nowe kierunki znaku" subtitle="Rewizja po feedbacku — bez koncentrycznej geometrii">
+        <DCArtboard id="variants" label="Trzy propozycje" width={1100} height={520}>
+          <VariantsBoard/>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="intro" title="PrzyTobie" subtitle="Wizualizacja marki · przewodnik dla pacjentek z rakiem piersi">
+        <DCArtboard id="primary-light" label="Logo · jasne tło" width={760} height={420}>
+          <PrimaryLockupLight/>
+        </DCArtboard>
+        <DCArtboard id="primary-dark"  label="Logo · ciemne tło" width={760} height={420}>
+          <PrimaryLockupDark/>
+        </DCArtboard>
+        <DCArtboard id="stacked" label="Lockup pionowy" width={440} height={420}>
+          <StackedLockup/>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="construction" title="Znak" subtitle="Konstrukcja, warianty 1-kolorowe, skalowalność">
+        <DCArtboard id="anatomy" label="Anatomia znaku" width={840} height={460}>
+          <ConstructionBoard/>
+        </DCArtboard>
+        <DCArtboard id="mono" label="Warianty 1-kolorowe" width={560} height={460}>
+          <MonochromeBoard/>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="icons" title="Ikona aplikacji" subtitle="Warianty kolorystyczne dla App Store / launcher / dark mode">
+        <DCArtboard id="icon-grid" label="System ikon" width={760} height={520}>
+          <IconGrid/>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="palette" title="System kolorów" subtitle="Tony ciepłe, miękkie · WCAG AA">
+        <DCArtboard id="palette" label="Paleta" width={1240} height={460}>
+          <PaletteBoard/>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="type" title="Typografia & ton" subtitle="Manrope · Newsreader · ciepły, ludzki głos">
+        <DCArtboard id="type" label="Skala typograficzna" width={840} height={500}>
+          <TypeBoard/>
+        </DCArtboard>
+        <DCArtboard id="voice" label="Ton głosu" width={840} height={500}>
+          <VoiceBoard/>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="product" title="Marka w aplikacji" subtitle="Ekran powitalny i ekran ścieżki leczenia">
+        <DCArtboard id="welcome" label="Ekran powitalny" width={420} height={800}>
+          <PhoneArtboard><WelcomeScreen/></PhoneArtboard>
+        </DCArtboard>
+        <DCArtboard id="path" label="Twoja ścieżka" width={420} height={800}>
+          <PhoneArtboard><PathScreen/></PhoneArtboard>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
