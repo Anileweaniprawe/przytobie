@@ -1,0 +1,59 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: radial-gradient(120% 80% at 50% 0%, #EBE1F5 0%, #F2EBF6 38%, #F6EEE9 65%, #FBF5EE 100%);
+  background-attachment: fixed;
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.page-bg {
+  background: radial-gradient(120% 80% at 50% 0%, #EBE1F5 0%, #F2EBF6 38%, #F6EEE9 65%, #FBF5EE 100%);
+}
+
+.app-shell {
+  width: 100%;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+/* Desktop: centered phone frame */
+@media (min-width: 520px) {
+  body {
+    background: #DDD8D0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 24px;
+  }
+  .app-shell {
+    width: min(390px, calc(100vw - 48px));
+    min-height: min(844px, calc(100dvh - 48px));
+    max-height: calc(100dvh - 48px);
+    border-radius: 44px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.1);
+  }
+}
+
+button { cursor: pointer; }
+a { color: inherit; }
+
+@keyframes screenFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.screen-enter {
+  animation: screenFadeIn 0.15s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fadeUp 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
