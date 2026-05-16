@@ -1,7 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  background: radial-gradient(120% 80% at 50% 0%, #EBE1F5 0%, #F2EBF6 38%, #F6EEE9 65%, #FBF5EE 100%);
+  background: radial-gradient(120% 80% at 50% 0%, #EEE9FA 0%, #F3EFF9 38%, #F6EEE9 65%, #FBF5EE 100%);
   background-attachment: fixed;
   font-family: var(--font-manrope), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -9,7 +9,7 @@ html, body {
 }
 
 .page-bg {
-  background: radial-gradient(120% 80% at 50% 0%, #EBE1F5 0%, #F2EBF6 38%, #F6EEE9 65%, #FBF5EE 100%);
+  background: radial-gradient(120% 80% at 50% 0%, #EEE9FA 0%, #F3EFF9 38%, #F6EEE9 65%, #FBF5EE 100%);
 }
 
 .app-shell {

@@ -9,9 +9,9 @@ const TC = {
   sageLine:   '#A8C5A0',
   sageBg:     '#EAF2E7',
   sageIcon:   '#4E7E4C',
-  roseLine:   '#C96E7A',
-  roseBg:     '#F8E8EA',
-  roseIcon:   '#B85868',
+  roseLine:   '#4AAAC6',
+  roseBg:     '#E4F2FA',
+  roseIcon:   '#3A90B5',
   grayLine:   '#D0C8C0',
   grayBg:     '#EDE8E3',
   grayIcon:   'rgba(58,42,63,0.28)',
@@ -314,7 +314,12 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
 function TimelineContent() {
   const searchParams   = useSearchParams();
   const urlStage       = Math.min(6, Math.max(1, parseInt(searchParams.get('stage') ?? '3', 10)));
-  const dashStage      = Math.min(5, Math.max(1, parseInt(searchParams.get('dash')  ?? '3', 10)));
+  const dashParam      = searchParams.get('dash');
+  const dashStage      = Math.min(5, Math.max(1,
+    parseInt(dashParam) ||
+    (typeof window !== 'undefined' ? parseInt(localStorage.getItem('userStage')) : 0) ||
+    1
+  ));
 
   const [activeStage,    setActiveStage]    = useState(urlStage);
   const [expanded,       setExpanded]       = useState(urlStage);

@@ -1,5 +1,5 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -7,6 +7,7 @@ import { PT } from '@/lib/theme';
 import {
   FindClinic, Checklist, ChatScreen, DocumentsScreen,
   BookVisit, ReportSymptom, MyResults, SupportScreen, RehabPlan, PartnersScreen,
+  AppointmentDetail,
 } from '@/components/screens';
 
 // ─── SVG icon set ─────────────────────────────────────────────
@@ -124,6 +125,13 @@ function Header() {
   const dateStr = new Date().toLocaleDateString('pl-PL', {
     weekday: 'long', day: 'numeric', month: 'long',
   });
+  const [userName, setUserName] = useState('Agnieszko');
+  useEffect(() => {
+    const stored = localStorage.getItem('userName');
+    if (stored) setUserName(stored);
+  }, []);
+  const initial = userName[0]?.toUpperCase() ?? 'A';
+
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
@@ -137,13 +145,13 @@ function Header() {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontFamily: 'var(--font-manrope), system-ui',
         fontWeight: 700, fontSize: 17, color: PT.plum,
-      }}>A</div>
+      }}>{initial}</div>
       <div style={{ flex: 1 }}>
         <div style={{
           fontFamily: 'var(--font-manrope), system-ui',
           fontWeight: 600, fontSize: 16,
           color: PT.plum, letterSpacing: '-0.01em',
-        }}>Cześć, Agnieszko</div>
+        }}>Cześć, {userName}</div>
         <div style={{
           fontFamily: 'var(--font-manrope), system-ui',
           fontSize: 12, color: 'rgba(58,42,63,0.45)',
@@ -161,8 +169,36 @@ function Header() {
   );
 }
 
-function HeroCard({ data }) {
+function HeroCard({ data, onCTA }) {
   const [date, setDate] = useState('');
+  const [bellSet, setBellSet] = useState(false);
+  const [shake, setShake] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const dismissRef = useRef(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('biopsyReminder');
+    if (saved) { setDate(saved); setBellSet(true); }
+    return () => { if (dismissRef.current) clearTimeout(dismissRef.current); };
+  }, []);
+
+  function handleBell() {
+    if (!date) {
+      setShake(true);
+      setTimeout(() => setShake(false), 380);
+      return;
+    }
+    localStorage.setItem('biopsyReminder', date);
+    setBellSet(true);
+    const d = new Date(date + 'T00:00:00');
+    const formatted = d.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' });
+    setToast(formatted);
+    setToastVisible(true);
+    if (dismissRef.current) clearTimeout(dismissRef.current);
+    dismissRef.current = setTimeout(() => setToastVisible(false), 3000);
+  }
+
   return (
     <div style={{
       margin: '16px 16px 0',
@@ -173,6 +209,20 @@ function HeroCard({ data }) {
       position: 'relative',
       overflow: 'hidden',
     }}>
+      <style>{`
+        @keyframes shake {
+          0%,100% { transform: translateX(0); }
+          20%      { transform: translateX(-4px); }
+          40%      { transform: translateX(4px); }
+          60%      { transform: translateX(-4px); }
+          80%      { transform: translateX(4px); }
+        }
+        @keyframes toastIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
       {/* decorative halo */}
       <div style={{
         position: 'absolute', top: -40, right: -40,
@@ -180,14 +230,13 @@ function HeroCard({ data }) {
         background: 'rgba(255,255,255,0.35)',
         pointerEvents: 'none',
       }}/>
+
       <div style={{
         fontFamily: 'var(--font-newsreader), Georgia, serif',
         fontStyle: 'italic',
         fontSize: 19, lineHeight: 1.35,
-        color: PT.plum,
-        letterSpacing: '-0.01em',
-        marginBottom: 10,
-        position: 'relative',
+        color: PT.plum, letterSpacing: '-0.01em',
+        marginBottom: 10, position: 'relative',
       }}>
         {data.heroTitle}
       </div>
@@ -202,7 +251,9 @@ function HeroCard({ data }) {
             display: 'flex', alignItems: 'center', gap: 8,
             background: 'rgba(255,255,255,0.65)',
             borderRadius: 12, padding: '0 14px',
-            border: '1.5px solid rgba(58,42,63,0.1)',
+            border: `1.5px solid ${shake ? 'rgba(201,110,122,0.5)' : 'rgba(58,42,63,0.1)'}`,
+            animation: shake ? 'shake 0.38s ease' : 'none',
+            transition: 'border-color 0.2s',
           }}>
             <input
               type="date"
@@ -211,38 +262,93 @@ function HeroCard({ data }) {
               style={{
                 flex: 1, height: 42, border: 'none', background: 'transparent',
                 fontFamily: 'var(--font-manrope), system-ui',
-                fontSize: 14, color: PT.plum,
-                outline: 'none',
+                fontSize: 14, color: PT.plum, outline: 'none',
               }}
             />
-            <Icon name="bell" size={17} color={PT.salmon}/>
+            <button
+              onClick={handleBell}
+              style={{
+                appearance: 'none', border: 0, background: 'none',
+                padding: 4, cursor: 'pointer',
+                display: 'flex', alignItems: 'center',
+                transition: 'transform 0.15s',
+              }}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24"
+                   fill={bellSet ? `${PT.salmon}40` : 'none'}
+                   stroke={bellSet ? PT.salmon : 'rgba(58,42,63,0.4)'}
+                   strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 01-3.46 0"/>
+              </svg>
+            </button>
           </div>
         </div>
       ) : (
         <p style={{
           fontFamily: 'var(--font-manrope), system-ui',
           fontSize: 13, color: PT.plumSoft,
-          marginBottom: 16, lineHeight: 1.5,
-          position: 'relative',
+          marginBottom: 16, lineHeight: 1.5, position: 'relative',
         }}>{data.heroSubtitle}</p>
       )}
 
-      <button style={{
-        appearance: 'none', border: 0,
-        background: PT.plum, color: PT.cream,
-        height: 42, borderRadius: 21,
-        paddingLeft: 20, paddingRight: 20,
-        fontFamily: 'var(--font-manrope), system-ui',
-        fontSize: 14, fontWeight: 600,
-        letterSpacing: '-0.01em',
-        display: 'flex', alignItems: 'center', gap: 6,
-        cursor: 'pointer',
-        boxShadow: '0 6px 16px -4px rgba(58,42,63,0.3)',
-        position: 'relative',
-      }}>
+      <button
+        onClick={onCTA}
+        style={{
+          appearance: 'none', border: 0,
+          background: PT.plum, color: PT.cream,
+          height: 42, borderRadius: 21,
+          paddingLeft: 20, paddingRight: 20,
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em',
+          display: 'flex', alignItems: 'center', gap: 6,
+          cursor: onCTA ? 'pointer' : 'default',
+          boxShadow: '0 6px 16px -4px rgba(58,42,63,0.3)',
+          position: 'relative',
+        }}
+      >
         {data.heroCTA}
         <Icon name="arrow" size={14} color={PT.cream} strokeWidth={2.2}/>
       </button>
+
+      {/* Toast */}
+      {toast !== null && (
+        <div style={{
+          position: 'fixed', bottom: 88, right: 16, zIndex: 1000,
+          background: '#fff',
+          borderRadius: 14, padding: '12px 16px',
+          boxShadow: '0 4px 20px rgba(58,42,63,0.15)',
+          maxWidth: 240,
+          display: 'flex', alignItems: 'center', gap: 10,
+          opacity: toastVisible ? 1 : 0,
+          transform: toastVisible ? 'translateY(0)' : 'translateY(8px)',
+          transition: 'opacity 0.3s ease, transform 0.3s ease',
+          animation: toastVisible ? 'toastIn 0.3s ease both' : 'none',
+          pointerEvents: 'none',
+        }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: 14, flexShrink: 0,
+            background: '#EAF2E7',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="#4E7E4C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontWeight: 600, fontSize: 13, color: PT.plum,
+              letterSpacing: '-0.01em',
+            }}>Przypomnienie ustawione</div>
+            <div style={{
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontSize: 12, color: PT.plumSoft, marginTop: 1,
+            }}>{toast}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -519,8 +625,17 @@ function PostTreatmentCard() {
 function DashboardContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const initialStage = Math.min(5, Math.max(1, parseInt(searchParams.get('stage') ?? '1', 10)));
+  const stageParam = searchParams.get('stage');
+  const initialStage = Math.min(5, Math.max(1,
+    parseInt(stageParam) ||
+    (typeof window !== 'undefined' ? parseInt(localStorage.getItem('userStage')) : 0) ||
+    1
+  ));
   const [stage, setStage] = useState(initialStage);
+
+  useEffect(() => {
+    if (stageParam) localStorage.setItem('userStage', stageParam);
+  }, [stageParam]);
   const [screen, setScreen] = useState('dashboard');
   const [checklistType, setChecklistType] = useState('badanie');
   const data = STAGE_DATA[stage];
@@ -564,7 +679,8 @@ function DashboardContent() {
   if (screen === 'my-results')     return <MyResults onBack={back}/>;
   if (screen === 'support')        return <SupportScreen onBack={back}/>;
   if (screen === 'rehab-plan')     return <RehabPlan onBack={back}/>;
-  if (screen === 'partners')       return <PartnersScreen onBack={back} onOpenChat={() => setScreen('chat')}/>;
+  if (screen === 'partners')            return <PartnersScreen onBack={back} onOpenChat={() => setScreen('chat')}/>;
+  if (screen === 'appointment-detail')  return <AppointmentDetail onBack={back} onOpenChat={() => setScreen('chat')}/>;
 
   return (
     <>
@@ -579,7 +695,7 @@ function DashboardContent() {
         paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 32px)',
       }}>
         <Header/>
-        <HeroCard data={data}/>
+        <HeroCard data={data} onCTA={stage === 4 ? () => setScreen('appointment-detail') : undefined}/>
         <PathStrip currentStage={stage}/>
         <QuickGrid items={data.grid} onItemClick={handleTileClick}/>
         {data.hasSymptomCheckin && <SymptomCheckin/>}

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PT } from '@/lib/theme';
 
 // ─── Icons ────────────────────────────────────────────────────
@@ -264,8 +264,7 @@ export function Checklist({ type, onBack }) {
 }
 
 // ─── 3. ChatScreen ────────────────────────────────────────────
-const INITIAL_MESSAGES = [
-  { from: 'a', text: 'Cześć Agnieszko, jestem Twoją asystentką BCU. W czym mogę Ci dziś pomóc?' },
+const CHAT_REPLIES = [
   { from: 'u', text: 'Mam pytanie o konsylium wielodyscyplinarne' },
   { from: 'a', text: 'Oczywiście. Konsylium to spotkanie specjalistów — onkologa, chirurga, radiologa i patologa — którzy wspólnie ustalają najlepszy plan leczenia. Zazwyczaj trwa 30–60 minut i możesz zadawać pytania oraz wyrażać swoje oczekiwania.' },
 ];
@@ -279,7 +278,13 @@ const CHIP_REPLIES = {
 };
 
 export function ChatScreen({ onBack }) {
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState(() => {
+    const name = typeof window !== 'undefined' ? (localStorage.getItem('userName') || 'Agnieszko') : 'Agnieszko';
+    return [
+      { from: 'a', text: `Cześć ${name}, jestem Twoją asystentką BCU. W czym mogę Ci dziś pomóc?` },
+      ...CHAT_REPLIES,
+    ];
+  });
   const [input, setInput] = useState('');
   const [chipsUsed, setChipsUsed] = useState(false);
 
@@ -642,7 +647,7 @@ export function ReportSymptom({ onBack }) {
         style={{
           width: '100%', marginTop: 20,
           appearance: 'none', border: 0,
-          background: severity ? '#C96E7A' : 'rgba(58,42,63,0.1)',
+          background: severity ? '#4AAAC6' : 'rgba(58,42,63,0.1)',
           color: severity ? '#fff' : 'rgba(58,42,63,0.3)',
           borderRadius: 26, height: 52,
           fontFamily: 'var(--font-manrope), system-ui',
@@ -926,7 +931,7 @@ const PARTNERS = [
     location: 'Warszawa, Mokotów',
     description: 'Specjalizacja: rekonstrukcja areoli po mastektomii. Doświadczenie 8 lat, współpraca z oddziałami onkologicznymi.',
     badge: 'Polecane przez BCU',
-    badgeColor: '#C96E7A',
+    badgeColor: '#4AAAC6',
     phone: '+48 600 000 001',
     bookingType: 'phone',
     tags: ['Tatuaż medyczny'],
@@ -1050,7 +1055,7 @@ function ActionButtons({ partner, onOpenChat }) {
         </a>
         <button
           onClick={onOpenChat}
-          style={{ ...btnBase, flex: 1, border: 0, background: '#C96E7A', color: '#fff' }}
+          style={{ ...btnBase, flex: 1, border: 0, background: '#4AAAC6', color: '#fff' }}
         >
           <Icon name="chat" size={13} color="#fff"/>
           Zapytaj
@@ -1120,7 +1125,7 @@ function PartnerCard({ partner, isExpanded, onToggle, onOpenChat }) {
         alignItems: 'center', gap: 8, marginBottom: 10,
       }}>
         <span style={{
-          background: '#F5EEF0', color: '#C96E7A',
+          background: '#E4F2FA', color: '#4AAAC6',
           borderRadius: 10, padding: '3px 10px',
           fontFamily: 'var(--font-manrope), system-ui',
           fontSize: 11, fontWeight: 600, flexShrink: 0,
@@ -1172,7 +1177,7 @@ function PartnerCard({ partner, isExpanded, onToggle, onOpenChat }) {
             appearance: 'none', border: 0, background: 'none',
             padding: 0, marginTop: 3, cursor: 'pointer',
             fontFamily: 'var(--font-manrope), system-ui',
-            fontSize: 12, fontWeight: 600, color: '#C96E7A',
+            fontSize: 12, fontWeight: 600, color: '#4AAAC6',
           }}
         >{isExpanded ? 'mniej' : 'więcej'}</button>
       </div>
@@ -1233,7 +1238,7 @@ export function PartnersScreen({ onBack, onOpenChat }) {
               appearance: 'none', cursor: 'pointer',
               fontFamily: 'var(--font-manrope), system-ui',
               fontSize: 13, fontWeight: 500,
-              background: activeFilter === f ? '#C96E7A' : '#fff',
+              background: activeFilter === f ? '#4AAAC6' : '#fff',
               color: activeFilter === f ? '#fff' : '#6B6B6B',
               border: activeFilter === f ? 'none' : '1px solid #E0E0E0',
               transition: 'background 0.15s, color 0.15s',
@@ -1314,16 +1319,183 @@ export function PartnersScreen({ onBack, onOpenChat }) {
             borderRadius: 25,
             fontFamily: 'var(--font-manrope), system-ui',
             fontSize: 15, fontWeight: 600,
-            color: '#C96E7A',
+            color: '#4AAAC6',
             cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             boxShadow: '0 2px 12px rgba(58,42,63,0.08)',
           }}
         >
-          <Icon name="chat" size={16} color="#C96E7A"/>
+          <Icon name="chat" size={16} color="#4AAAC6"/>
           Nie znalazłaś? Zapytaj asystentkę
         </button>
       </div>
     </div>
+  );
+}
+
+// ─── 11. AppointmentDetail ────────────────────────────────────
+
+const APPT_ITEMS = [
+  'Dowód osobisty',
+  'Karta PESEL / ubezpieczenia',
+  'Wyniki ostatnich badań krwi',
+  'Wygodne ubranie z krótkim rękawem',
+  'Coś do jedzenia i picia',
+  'Ktoś bliski (jeśli możliwe)',
+];
+
+export function AppointmentDetail({ onBack, onOpenChat }) {
+  const [checked, setChecked] = useState({});
+  const [calendarAdded, setCalendarAdded] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('visitAdded') === 'true'
+  );
+
+  const checkedCount = Object.values(checked).filter(Boolean).length;
+
+  function toggle(i) {
+    setChecked(prev => ({ ...prev, [i]: !prev[i] }));
+  }
+
+  function addToCalendar() {
+    localStorage.setItem('visitAdded', 'true');
+    setCalendarAdded(true);
+  }
+
+  return (
+    <Wrap title="Szczegóły wizyty" onBack={onBack}>
+
+      {/* visit card with salmon left border */}
+      <Card style={{ overflow: 'visible', marginBottom: 0 }}>
+        <div style={{ display: 'flex' }}>
+          <div style={{
+            width: 6, flexShrink: 0,
+            background: PT.salmon,
+            borderRadius: '20px 0 0 20px',
+          }}/>
+          <div style={{ padding: '16px 16px 16px 14px', flex: 1 }}>
+            <div style={{
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontWeight: 700, fontSize: 16,
+              color: PT.plum, letterSpacing: '-0.01em',
+              marginBottom: 10,
+            }}>Chemioterapia — cykl 3/6</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {[
+                { icon: 'calendar', text: 'Jutro, 13 maja 2026 · 09:00' },
+                { icon: 'users',    text: 'dr Anna Wiśniewska — Onkolog' },
+                { icon: 'mapPin',   text: 'Salve Medica, ul. Inflancka 3, Warszawa' },
+              ].map((row, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <Icon name={row.icon} size={13} color="rgba(58,42,63,0.4)" sw={1.6}/>
+                  <span style={{
+                    fontFamily: 'var(--font-manrope), system-ui',
+                    fontSize: 13, color: PT.plumSoft,
+                  }}>{row.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <SectionLabel>Co zabrać</SectionLabel>
+
+      {/* progress bar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{
+          height: 4, flex: 1, borderRadius: 2,
+          background: 'rgba(58,42,63,0.1)', overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: `${(checkedCount / APPT_ITEMS.length) * 100}%`,
+            background: PT.salmon, borderRadius: 2,
+            transition: 'width 0.3s',
+          }}/>
+        </div>
+        <span style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 12, color: 'rgba(58,42,63,0.45)',
+          whiteSpace: 'nowrap',
+        }}>{checkedCount} / {APPT_ITEMS.length} zaznaczonych</span>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {APPT_ITEMS.map((item, i) => (
+          <button
+            key={i}
+            onClick={() => toggle(i)}
+            style={{
+              appearance: 'none', cursor: 'pointer', textAlign: 'left',
+              background: checked[i] ? `${PT.lilac}20` : '#fff',
+              border: checked[i] ? `1.5px solid ${PT.lilacDeep}` : '1.5px solid transparent',
+              borderRadius: 16, padding: '13px 16px',
+              display: 'flex', alignItems: 'center', gap: 14,
+              boxShadow: checked[i] ? 'none' : '0 1px 6px rgba(58,42,63,0.07)',
+              transition: 'all 0.18s',
+            }}
+          >
+            <div style={{
+              width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+              background: checked[i] ? PT.lilacDeep : 'transparent',
+              border: checked[i] ? 'none' : `1.5px solid rgba(58,42,63,0.2)`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.18s',
+            }}>
+              {checked[i] && <Icon name="check" size={12} color="#fff" sw={2.5}/>}
+            </div>
+            <span style={{
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontSize: 14, fontWeight: 500,
+              color: checked[i] ? 'rgba(58,42,63,0.45)' : PT.plum,
+              textDecoration: checked[i] ? 'line-through' : 'none',
+              lineHeight: 1.4, transition: 'color 0.18s',
+            }}>{item}</span>
+          </button>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <button
+          onClick={calendarAdded ? undefined : addToCalendar}
+          style={{
+            width: '100%', height: 52, borderRadius: 26,
+            appearance: 'none',
+            border: calendarAdded ? 'none' : `1.5px solid ${PT.plum}`,
+            background: calendarAdded ? PT.plum : 'transparent',
+            color: calendarAdded ? PT.cream : PT.plum,
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontSize: 15, fontWeight: 600,
+            cursor: calendarAdded ? 'default' : 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            transition: 'all 0.25s',
+            boxShadow: calendarAdded ? '0 8px 20px -6px rgba(58,42,63,0.3)' : 'none',
+          }}
+        >
+          {calendarAdded && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke={PT.cream} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          )}
+          {calendarAdded ? 'Dodano do kalendarza' : 'Dodaj do kalendarza'}
+        </button>
+
+        <button
+          onClick={onOpenChat}
+          style={{
+            width: '100%', height: 44,
+            appearance: 'none', border: 0, background: 'transparent',
+            color: PT.plumSoft,
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontSize: 14, fontWeight: 500, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          }}
+        >
+          <Icon name="chat" size={15} color={PT.plumSoft}/>
+          Zapytaj asystentkę
+        </button>
+      </div>
+    </Wrap>
   );
 }
