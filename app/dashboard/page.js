@@ -1,6 +1,13 @@
 'use client';
 import { useState, useEffect, useRef, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
+
+// Dynamic import for Map to avoid SSR issues
+const FacilitiesMap = dynamic(() => import('@/components/Map'), { 
+  ssr: false, 
+  loading: () => <div style={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F0F7F5', borderRadius: 20 }}>Ładowanie mapy...</div> 
+});
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PT } from '@/lib/theme';
@@ -650,12 +657,37 @@ const POST_TREATMENT_CHIPS = [
     description: 'Stowarzyszenie Amazonki to ruch na rzecz kobiet po leczeniu raka piersi, oferujący wsparcie psychologiczne, rehabilitację oraz pomoc w powrocie do zdrowia.',
     url: 'https://amazonkifederacja.pl'
   },
-  { label: 'Peruki onkologiczne', icon: 'sparkle' },
-  { label: 'Tatuaż medyczny',   icon: 'leaf'     },
+  { 
+    label: 'Peruki onkologiczne', 
+    icon: 'sparkle',
+    description: 'Dobór peruki to ważny element powrotu do pewności siebie. Pomożemy Ci znaleźć renomowane salony w Twojej okolicy, które specjalizują się w perukach medycznych.',
+    hasMap: true,
+    clinics: [
+      { name: 'Salon Rokoko', city: 'ul. Paderewskiego 6, Łódź', lat: 51.7245, lng: 19.4447, dist: '1.2 km', phone: '+48509849770' },
+      { name: 'Salon Peruk (CZMP)', city: 'ul. Rzgowska 281, Łódź', lat: 51.7061, lng: 19.4831, dist: '4.5 km', phone: '+48572328692' },
+      { name: 'Salon Peruk (CKD)', city: 'ul. Pomorska 251, Łódź', lat: 51.7788, lng: 19.5113, dist: '7.4 km', phone: '+48534812551' },
+    ]
+  },
+  { 
+    label: 'Tatuaż medyczny',   
+    icon: 'leaf',
+    description: 'Mikropigmentacja medyczna (np. rekonstrukcja brodawki sutkowej) pozwala na estetyczne wykończenie procesu rekonstrukcji piersi.',
+    hasMap: true,
+    clinics: [
+      { name: 'Studio Tatuażu Medycznego', city: 'ul. Piotrkowska 120, Łódź', lat: 51.7618, lng: 19.4582, dist: '0.8 km', phone: '+48500100200' },
+      { name: 'MedInk - Rekonstrukcja', city: 'ul. Zachodnia 12, Łódź', lat: 51.7761, lng: 19.4547, dist: '1.5 km', phone: '+48600200300' },
+    ]
+  },
 ];
 
 function PostTreatmentCard() {
   const [showInfo, setShowInfo] = useState(null);
+  const [isMapView, setIsMapView] = useState(false);
+
+  const closeModal = () => {
+    setShowInfo(null);
+    setIsMapView(false);
+  };
 
   return (
     <>
@@ -680,7 +712,7 @@ function PostTreatmentCard() {
           {POST_TREATMENT_CHIPS.map((chip, i) => (
             <button 
               key={i} 
-              onClick={() => chip.description && setShowInfo(chip)}
+              onClick={() => { setShowInfo(chip); setIsMapView(false); }}
               style={{
                 appearance: 'none',
                 border: '1.5px solid rgba(58,42,63,0.14)',
@@ -688,10 +720,10 @@ function PostTreatmentCard() {
                 borderRadius: 999, height: 36,
                 paddingLeft: 14, paddingRight: 14,
                 display: 'flex', alignItems: 'center', gap: 7,
-                cursor: chip.description ? 'pointer' : 'default',
+                cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
-              onMouseDown={e => { if(chip.description) e.currentTarget.style.transform = 'scale(0.96)'; }}
+              onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.96)'; }}
               onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
             >
@@ -714,7 +746,7 @@ function PostTreatmentCard() {
         }}>
           {/* Backdrop */}
           <div 
-            onClick={() => setShowInfo(null)}
+            onClick={closeModal}
             style={{
               position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
               background: 'rgba(58,42,63,0.4)',
@@ -725,54 +757,117 @@ function PostTreatmentCard() {
           
           {/* Modal Content */}
           <div className="fade-up" style={{
-            position: 'relative', width: '100%', maxWidth: 340,
+            position: 'relative', width: '100%', maxWidth: 360,
             background: '#fff', borderRadius: 28,
             padding: 24, boxShadow: '0 20px 40px rgba(58,42,63,0.2)',
+            height: isMapView ? '85vh' : 'auto', maxHeight: '85vh', 
+            overflow: 'hidden', display: 'flex', flexDirection: 'column'
           }}>
-             <div style={{ 
-               width: 48, height: 48, borderRadius: 24, 
-               background: '#F0F7F5', display: 'flex', 
-               alignItems: 'center', justifyContent: 'center',
-               marginBottom: 18 
-             }}>
-               <Icon name={showInfo.icon} size={24} color={PT.plum}/>
-             </div>
-             
-             <h3 style={{
-               fontFamily: 'var(--font-manrope), system-ui',
-               fontSize: 19, fontWeight: 700, color: PT.plum,
-               marginBottom: 10, letterSpacing: '-0.02em'
-             }}>{showInfo.label}</h3>
-             
-             <p style={{
-               fontFamily: 'var(--font-manrope), system-ui',
-               fontSize: 14, lineHeight: 1.6, color: 'rgba(58,42,63,0.7)',
-               marginBottom: 28
-             }}>{showInfo.description}</p>
-             
-             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-               <a 
-                 href={showInfo.url} 
-                 target="_blank" 
-                 rel="noopener noreferrer"
-                 style={{
-                   height: 50, borderRadius: 25, background: PT.plum,
-                   color: '#fff', display: 'flex', alignItems: 'center',
-                   justifyContent: 'center', textDecoration: 'none',
+             {isMapView ? (
+               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
+                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16, flexShrink: 0 }}>
+                    <button 
+                      onClick={() => setIsMapView(false)}
+                      style={{
+                        appearance: 'none', border: 0, background: '#F0F7F5',
+                        width: 36, height: 36, borderRadius: 18,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        marginRight: 12, cursor: 'pointer'
+                      }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={PT.plum} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                      </svg>
+                    </button>
+                    <h3 style={{
+                      fontFamily: 'var(--font-manrope), system-ui',
+                      fontSize: 17, fontWeight: 700, color: PT.plum,
+                      margin: 0, letterSpacing: '-0.02em'
+                    }}>Miejsca w okolicy</h3>
+                 </div>
+                 
+                 <div style={{ 
+                   position: 'relative', flex: 1, borderRadius: 20, overflow: 'hidden',
+                   background: '#f8f9fa', border: '1px solid rgba(58,42,63,0.05)',
+                   minHeight: 300 // ensure Leaflet container doesn't collapse
+                 }}>
+                   <div style={{ position: 'absolute', inset: 0 }}>
+                     <FacilitiesMap clinics={showInfo.clinics || []} />
+                   </div>
+                 </div>
+
+                 <button 
+                   onClick={closeModal}
+                   style={{
+                     marginTop: 16, flexShrink: 0, height: 44, background: 'none', border: 0,
+                     color: PT.plumSoft, fontFamily: 'var(--font-manrope), system-ui',
+                     fontSize: 14, fontWeight: 500, cursor: 'pointer'
+                   }}
+                 >Zamknij mapę</button>
+               </div>
+             ) : (
+               <>
+                 <div style={{ 
+                   width: 48, height: 48, borderRadius: 24, 
+                   background: '#F0F7F5', display: 'flex', 
+                   alignItems: 'center', justifyContent: 'center',
+                   marginBottom: 18 
+                 }}>
+                   <Icon name={showInfo.icon} size={24} color={PT.plum}/>
+                 </div>
+                 
+                 <h3 style={{
                    fontFamily: 'var(--font-manrope), system-ui',
-                   fontSize: 15, fontWeight: 600,
-                 }}
-               >Dowiedz się więcej</a>
-               
-               <button 
-                 onClick={() => setShowInfo(null)}
-                 style={{
-                   height: 44, background: 'none', border: 0,
-                   color: PT.plumSoft, fontFamily: 'var(--font-manrope), system-ui',
-                   fontSize: 14, fontWeight: 500, cursor: 'pointer'
-                 }}
-               >Zamknij</button>
-             </div>
+                   fontSize: 19, fontWeight: 700, color: PT.plum,
+                   marginBottom: 10, letterSpacing: '-0.02em'
+                 }}>{showInfo.label}</h3>
+                 
+                 <p style={{
+                   fontFamily: 'var(--font-manrope), system-ui',
+                   fontSize: 14, lineHeight: 1.6, color: 'rgba(58,42,63,0.7)',
+                   marginBottom: 28
+                 }}>{showInfo.description}</p>
+                 
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                   {showInfo.url && (
+                     <a 
+                       href={showInfo.url} 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       style={{
+                         height: 50, borderRadius: 25, background: PT.plum,
+                         color: '#fff', display: 'flex', alignItems: 'center',
+                         justifyContent: 'center', textDecoration: 'none',
+                         fontFamily: 'var(--font-manrope), system-ui',
+                         fontSize: 15, fontWeight: 600,
+                       }}
+                     >Dowiedz się więcej</a>
+                   )}
+
+                   {showInfo.hasMap && (
+                     <button 
+                       onClick={() => setIsMapView(true)}
+                       style={{
+                         height: 50, borderRadius: 25, background: PT.plum,
+                         color: '#fff', display: 'flex', alignItems: 'center',
+                         justifyContent: 'center', border: 0,
+                         fontFamily: 'var(--font-manrope), system-ui',
+                         fontSize: 15, fontWeight: 600, cursor: 'pointer'
+                       }}
+                     >Pokaż na mapie</button>
+                   )}
+                   
+                   <button 
+                     onClick={closeModal}
+                     style={{
+                       height: 44, background: 'none', border: 0,
+                       color: PT.plumSoft, fontFamily: 'var(--font-manrope), system-ui',
+                       fontSize: 14, fontWeight: 500, cursor: 'pointer'
+                     }}
+                   >Zamknij</button>
+                 </div>
+               </>
+             )}
           </div>
         </div>
       )}
