@@ -175,11 +175,16 @@ function HeroCard({ data, onCTA }) {
   const [shake, setShake] = useState(false);
   const [toast, setToast] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const dismissRef = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('biopsyReminder');
-    if (saved) { setDate(saved); setBellSet(true); }
+    if (saved) { 
+      setDate(saved); 
+      setBellSet(true); 
+      setIsSaved(true);
+    }
     return () => { if (dismissRef.current) clearTimeout(dismissRef.current); };
   }, []);
 
@@ -191,6 +196,7 @@ function HeroCard({ data, onCTA }) {
     }
     localStorage.setItem('biopsyReminder', date);
     setBellSet(true);
+    setIsSaved(true);
     const d = new Date(date + 'T00:00:00');
     const formatted = d.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' });
     setToast(formatted);
@@ -198,6 +204,15 @@ function HeroCard({ data, onCTA }) {
     if (dismissRef.current) clearTimeout(dismissRef.current);
     dismissRef.current = setTimeout(() => setToastVisible(false), 3000);
   }
+
+  const isBiopsy = data.hasDateInput;
+  const currentCTA = (isBiopsy) ? (isSaved ? () => setIsSaved(false) : handleBell) : onCTA;
+  const ctaLabel = (isBiopsy && isSaved) ? 'Zmień datę' : data.heroCTA;
+
+  // Format date for display
+  const displayDate = date ? new Date(date + 'T00:00:00').toLocaleDateString('pl-PL', { 
+    day: 'numeric', month: 'long', year: 'numeric' 
+  }) : '';
 
   return (
     <div style={{
@@ -246,43 +261,60 @@ function HeroCard({ data, onCTA }) {
           <p style={{
             fontFamily: 'var(--font-manrope), system-ui',
             fontSize: 13, color: PT.plumSoft, marginBottom: 8,
-          }}>{data.heroSubtitle}</p>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: 'rgba(255,255,255,0.65)',
-            borderRadius: 12, padding: '0 14px',
-            border: `1.5px solid ${shake ? 'rgba(201,110,122,0.5)' : 'rgba(58,42,63,0.1)'}`,
-            animation: shake ? 'shake 0.38s ease' : 'none',
-            transition: 'border-color 0.2s',
-          }}>
-            <input
-              type="date"
-              value={date}
-              onChange={e => setDate(e.target.value)}
-              style={{
-                flex: 1, height: 42, border: 'none', background: 'transparent',
+          }}>{isSaved ? 'Twoje przypomnienie:' : data.heroSubtitle}</p>
+          
+          {isSaved ? (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              background: 'rgba(255,255,255,0.4)',
+              borderRadius: 14, padding: '10px 16px',
+              width: 'fit-content',
+              border: '1px solid rgba(255,255,255,0.5)',
+            }}>
+              <Icon name="calendar" size={16} color={PT.plum}/>
+              <span style={{
                 fontFamily: 'var(--font-manrope), system-ui',
-                fontSize: 14, color: PT.plum, outline: 'none',
-              }}
-            />
-            <button
-              onClick={handleBell}
-              style={{
-                appearance: 'none', border: 0, background: 'none',
-                padding: 4, cursor: 'pointer',
-                display: 'flex', alignItems: 'center',
-                transition: 'transform 0.15s',
-              }}
-            >
-              <svg width="17" height="17" viewBox="0 0 24 24"
-                   fill={bellSet ? `${PT.salmon}40` : 'none'}
-                   stroke={bellSet ? PT.salmon : 'rgba(58,42,63,0.4)'}
-                   strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 01-3.46 0"/>
-              </svg>
-            </button>
-          </div>
+                fontSize: 15, fontWeight: 700, color: PT.plum,
+              }}>{displayDate}</span>
+            </div>
+          ) : (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: 'rgba(255,255,255,0.65)',
+              borderRadius: 12, padding: '0 14px',
+              border: `1.5px solid ${shake ? 'rgba(201,110,122,0.5)' : 'rgba(58,42,63,0.1)'}`,
+              animation: shake ? 'shake 0.38s ease' : 'none',
+              transition: 'border-color 0.2s',
+            }}>
+              <input
+                type="date"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                style={{
+                  flex: 1, height: 42, border: 'none', background: 'transparent',
+                  fontFamily: 'var(--font-manrope), system-ui',
+                  fontSize: 14, color: PT.plum, outline: 'none',
+                }}
+              />
+              <button
+                onClick={handleBell}
+                style={{
+                  appearance: 'none', border: 0, background: 'none',
+                  padding: 4, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center',
+                  transition: 'transform 0.15s',
+                }}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24"
+                     fill={bellSet ? `${PT.salmon}40` : 'none'}
+                     stroke={bellSet ? PT.salmon : 'rgba(58,42,63,0.4)'}
+                     strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <p style={{
@@ -293,7 +325,7 @@ function HeroCard({ data, onCTA }) {
       )}
 
       <button
-        onClick={onCTA}
+        onClick={currentCTA}
         style={{
           appearance: 'none', border: 0,
           background: PT.plum, color: PT.cream,
@@ -302,13 +334,13 @@ function HeroCard({ data, onCTA }) {
           fontFamily: 'var(--font-manrope), system-ui',
           fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em',
           display: 'flex', alignItems: 'center', gap: 6,
-          cursor: onCTA ? 'pointer' : 'default',
+          cursor: currentCTA ? 'pointer' : 'default',
           boxShadow: '0 6px 16px -4px rgba(58,42,63,0.3)',
           position: 'relative',
         }}
       >
-        {data.heroCTA}
-        <Icon name="arrow" size={14} color={PT.cream} strokeWidth={2.2}/>
+        {ctaLabel}
+        <Icon name={isBiopsy && isSaved ? 'sparkle' : 'arrow'} size={14} color={PT.cream} strokeWidth={2.2}/>
       </button>
 
       {/* Toast */}
