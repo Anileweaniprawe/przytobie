@@ -11,11 +11,112 @@ const FacilitiesMap = dynamic(() => import('@/components/Map'), {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PT } from '@/lib/theme';
+import { SUBTYPES, getStepsForSubtype } from '@/lib/treatment';
 import {
   FindClinic, Checklist, ChatScreen, DocumentsScreen,
   BookVisit, ReportSymptom, MyResults, SupportScreen, RehabPlan, PartnersScreen,
   AppointmentDetail,
 } from '@/components/screens';
+
+function KnowledgeCard({ subtype }) {
+  const currentSubtype = SUBTYPES.find(s => s.id === subtype);
+  if (!currentSubtype || subtype === 'unknown') return null;
+
+  const infoMap = {
+    lum_a: {
+      title: 'Podtyp Luminalny A',
+      desc: 'To najczęstszy podtyp raka piersi. Cechuje się powolnym wzrostem i bardzo dobrą odpowiedzią na leczenie hormonalne.',
+      focus: 'Kluczowe: Hormonoterapia (HTH)',
+      fact: 'Chemioterapia tylko w wyjątkowych sytuacjach.'
+    },
+    lum_b_neg: {
+      title: 'Podtyp Luminalny B (HER2-)',
+      desc: 'Podtyp o dodatnim statusie receptorów hormonalnych, ale wyższym stopniu zróżnicowania niż Luminalny A.',
+      focus: 'Leczenie: HTH ± Chemioterapia',
+      fact: 'Decyzja o chemii zależy od poziomu Ki67.'
+    },
+    lum_b_pos: {
+      title: 'Podtyp Luminalny B (HER2+)',
+      desc: 'Podtyp wykazujący cechy hormonalne oraz nadrzeźnię receptora HER2.',
+      focus: 'Leczenie: Chemo + Trastuzumab + HTH',
+      fact: 'Bardzo dobra odpowiedź na leczenie celowane.'
+    },
+    her2_pos: {
+      title: 'Podtyp Nieluminalny HER2+',
+      desc: 'Głównym motorem wzrostu jest receptor HER2. Nowoczesne leki celowane zrewolucjonizowały wyniki leczenia tego podtypu.',
+      focus: 'Leczenie: Chemo + Trastuzumab',
+      fact: 'Leki celowane uderzają prosto w "silnik" raka.'
+    },
+    tnbc: {
+      title: 'Podtyp Potrójnie ujemny',
+      desc: 'Brak receptorów hormonalnych i HER2. Najszybciej reaguje na chemioterapię i nowoczesną immunoterapię.',
+      focus: 'Leczenie: Chemo ± Immunoterapia',
+      fact: 'Intensywne leczenie na starcie daje najlepsze efekty.'
+    }
+  };
+
+  const info = infoMap[subtype];
+
+  return (
+    <div className="fade-up" style={{
+      margin: '14px 16px 0',
+      background: PT.paper,
+      borderRadius: 22,
+      padding: '18px 20px',
+      border: `1.5px solid ${currentSubtype.color}15`,
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        position: 'absolute', top: -10, right: -10,
+        width: 60, height: 60, borderRadius: 30,
+        background: `${currentSubtype.color}08`,
+      }}/>
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <div style={{ width: 8, height: 8, borderRadius: 4, background: currentSubtype.color }} />
+        <span style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 11, fontWeight: 700,
+          color: currentSubtype.color,
+          textTransform: 'uppercase', letterSpacing: '0.06em'
+        }}>Twoja Diagnoza</span>
+      </div>
+
+      <div style={{
+        fontFamily: 'var(--font-newsreader), Georgia, serif',
+        fontStyle: 'italic',
+        fontSize: 20, lineHeight: 1.25,
+        color: PT.plum, marginBottom: 8
+      }}>
+        {info.title}
+      </div>
+
+      <p style={{
+        fontFamily: 'var(--font-manrope), system-ui',
+        fontSize: 13, lineHeight: 1.5,
+        color: 'rgba(58,42,63,0.65)', marginBottom: 12
+      }}>
+        {info.desc}
+      </p>
+
+      <div style={{
+        background: `${currentSubtype.color}10`,
+        borderRadius: 12, padding: '10px 14px',
+        display: 'flex', flexDirection: 'column', gap: 4
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 13, fontWeight: 700, color: PT.plum
+        }}>{info.focus}</div>
+        <div style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 12, color: 'rgba(58,42,63,0.5)'
+        }}>{info.fact}</div>
+      </div>
+    </div>
+  );
+}
 
 // ─── SVG icon set ─────────────────────────────────────────────
 function Icon({ name, size = 20, color = PT.plumSoft, strokeWidth = 1.8 }) {
@@ -48,11 +149,12 @@ function Icon({ name, size = 20, color = PT.plumSoft, strokeWidth = 1.8 }) {
 
 // ─── Stage configuration ──────────────────────────────────────
 const STAGE_META = [
-  { id: 1, label: 'Skierowanie' },
-  { id: 2, label: 'Biopsja' },
-  { id: 3, label: 'Diagnoza' },
-  { id: 4, label: 'Leczenie' },
+  { id: 1, label: 'Badania' },
+  { id: 2, label: 'Diagnostyka' },
+  { id: 3, label: 'Leczenie operacyjne' },
+  { id: 4, label: 'Leczenie okołooperacyjne' },
   { id: 5, label: 'Rehabilitacja' },
+  { id: 6, label: 'Powrót do życia' },
 ];
 
 const STAGE_DATA = {
@@ -66,7 +168,7 @@ const STAGE_DATA = {
       { label: 'Gdzie się zbadać',     icon: 'hospital'  },
       { label: 'Co zabrać na badanie', icon: 'clipboard' },
       { label: 'Zapytaj asystentkę',   icon: 'chat'      },
-      { label: 'Twoje skierowanie',    icon: 'document'  },
+      { label: 'Twoje badania',       icon: 'document'  },
     ],
   },
   2: {
@@ -122,6 +224,19 @@ const STAGE_DATA = {
       { label: 'Zadbaj o siebie',    icon: 'sparkle'  },
     ],
     hasPostTreatment: true,
+  },
+  6: {
+    heroGradient: 'linear-gradient(145deg, #FFF9F0 0%, #FFE8CC 100%)',
+    heroDotColor: '#FF9500',
+    heroTitle: 'Witaj w nowym rozdziale. Twoja siła jest inspiracją.',
+    heroSubtitle: 'Pamiętaj o regularnej samokontroli i badaniach.',
+    heroCTA: 'Moja społeczność',
+    grid: [
+      { label: 'Grupy wsparcia',     icon: 'users'    },
+      { label: 'Zadbaj o siebie',    icon: 'sparkle'  },
+      { label: 'Zapytaj asystentkę', icon: 'chat'     },
+      { label: 'Moje dokumenty',     icon: 'folder'   },
+    ],
   },
 };
 
@@ -530,7 +645,13 @@ function PathStrip({ currentStage }) {
             <Icon name="arrow" size={12} color={PT.plumSoft}/>
           </span>
         </div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        padding: '0 4px',
+        position: 'relative',
+      }}>
         {STAGE_META.map((stage, idx) => {
           const done   = stage.id < currentStage;
           const active = stage.id === currentStage;
@@ -538,62 +659,81 @@ function PathStrip({ currentStage }) {
           const isLast = idx === STAGE_META.length - 1;
 
           return (
-            <div key={stage.id} style={{ display: 'flex', alignItems: 'flex-start', flex: 1 }}>
-              {/* node + label */}
-              <div style={{
-                display: 'flex', flexDirection: 'column',
-                alignItems: 'center', gap: 6, flex: 1,
-              }}>
-                {/* circle */}
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {active && (
-                    <div style={{
-                      position: 'absolute',
-                      width: 30, height: 30, borderRadius: 15,
-                      background: PT.salmon,
-                      opacity: 0.25,
-                      animation: 'pulse 2s ease-in-out infinite',
-                    }}/>
-                  )}
+            <div key={stage.id} style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              flex: isLast ? 'none' : 1,
+            }}>
+              {/* node */}
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {active && (
                   <div style={{
-                    width: 22, height: 22, borderRadius: 11,
-                    background: done   ? PT.lilacDeep
-                               : active ? PT.salmon
-                               : 'transparent',
-                    border: upcoming ? `1.5px dashed rgba(58,42,63,0.22)` : 'none',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    position: 'relative', zIndex: 1,
-                  }}>
-                    {done && <Icon name="check" size={11} color="#fff" strokeWidth={2.5}/>}
-                    {active && <div style={{ width: 7, height: 7, borderRadius: 4, background: '#fff' }}/>}
-                  </div>
-                </div>
-                {/* label */}
+                    position: 'absolute',
+                    width: 32, height: 32, borderRadius: 16,
+                    background: PT.salmon,
+                    opacity: 0.2,
+                    animation: 'pulse 2s ease-in-out infinite',
+                  }}/>
+                )}
                 <div style={{
-                  fontFamily: 'var(--font-manrope), system-ui',
-                  fontSize: 9.5, fontWeight: active ? 700 : 500,
-                  color: active ? PT.plum : done ? PT.plumSoft : 'rgba(58,42,63,0.35)',
-                  textAlign: 'center', lineHeight: 1.2,
-                  whiteSpace: 'nowrap',
-                }}>{stage.label}</div>
+                  width: 26, height: 26, borderRadius: 13,
+                  background: done   ? PT.lilacDeep
+                             : active ? PT.salmon
+                             : PT.cream,
+                  border: upcoming ? `1.5px dashed rgba(58,42,63,0.15)` : 'none',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  position: 'relative', zIndex: 1,
+                  boxShadow: active ? `0 4px 12px ${PT.salmon}40` : 'none',
+                }}>
+                  {done ? (
+                    <Icon name="check" size={12} color="#fff" strokeWidth={3}/>
+                  ) : (
+                    <span style={{
+                      fontFamily: 'var(--font-manrope), system-ui',
+                      fontSize: 11, fontWeight: 800,
+                      color: active ? '#fff' : 'rgba(58,42,63,0.3)',
+                    }}>{stage.id}</span>
+                  )}
+                </div>
               </div>
 
               {/* connector line */}
               {!isLast && (
                 <div style={{
-                  height: 1.5, flex: 0,
-                  width: 0, marginTop: 10,
-                  borderTop: done
-                    ? `2px solid ${PT.lilacDeep}`
-                    : '1.5px dashed rgba(58,42,63,0.18)',
-                  alignSelf: 'flex-start',
-                  flexGrow: 0,
-                  minWidth: 8,
+                  height: 2, flex: 1,
+                  margin: '0 4px',
+                  background: done ? PT.lilacDeep : 'rgba(58,42,63,0.08)',
+                  borderRadius: 1,
                 }}/>
               )}
             </div>
           );
         })}
+      </div>
+
+      {/* Single prominent label below the strip */}
+      <div style={{
+        marginTop: 16,
+        textAlign: 'center',
+        padding: '8px 12px',
+        background: 'rgba(58,42,63,0.03)',
+        borderRadius: 12,
+      }}>
+        <span style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 11, fontWeight: 700,
+          color: 'rgba(58,42,63,0.4)',
+          textTransform: 'uppercase', letterSpacing: '0.05em',
+          display: 'block', marginBottom: 2
+        }}>Twój aktualny etap:</span>
+        <span style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 15, fontWeight: 800,
+          color: PT.plum,
+          letterSpacing: '-0.01em'
+        }}>
+          {STAGE_META.find(s => s.id === currentStage)?.label}
+        </span>
       </div>
     </div>
   </Link>
@@ -1011,10 +1151,14 @@ function DashboardContent() {
     1
   ));
   const [stage, setStage] = useState(initialStage);
+  const [subtype, setSubtype] = useState(null);
 
   useEffect(() => {
     if (stageParam) localStorage.setItem('userStage', stageParam);
+    const storedSubtype = localStorage.getItem('userSubtype');
+    if (storedSubtype) setSubtype(storedSubtype);
   }, [stageParam]);
+
   const [screen, setScreen] = useState('dashboard');
   const [checklistType, setChecklistType] = useState('badanie');
   const [chatTopic, setChatTopic] = useState(null);
@@ -1028,7 +1172,7 @@ function DashboardContent() {
       'Gdzie się zbadać':        () => setScreen('find-clinic'),
       'Co zabrać na badanie':    () => { setChecklistType('badanie');   setScreen('checklist'); },
       'Zapytaj asystentkę':      () => { setChatTopic(null); setScreen('chat'); },
-      'Twoje skierowanie':       () => setScreen('documents'),
+      'Twoje badania':           () => setScreen('documents'),
       'Co oznacza biopsja':      () => { setChatTopic('Co oznacza biopsja?'); setScreen('chat'); },
       'Pytania do lekarza':      () => { setChatTopic(null); setScreen('chat'); },
       'Wsparcie psychologiczne': () => setScreen('support'),
@@ -1077,6 +1221,7 @@ function DashboardContent() {
           stage === 4 ? () => setScreen('appointment-detail') : 
           stage === 5 ? () => setScreen('rehab-plan') : undefined
         }/>
+        <KnowledgeCard subtype={subtype} />
         <PathStrip currentStage={stage}/>
         <QuickGrid items={data.grid} onItemClick={handleTileClick}/>
         {data.hasSymptomCheckin && <SymptomCheckin/>}
@@ -1101,14 +1246,14 @@ function DashboardContent() {
                 appearance: 'none', border: 0,
                 background: stage === s.id ? PT.salmon : 'rgba(255,255,255,0.1)',
                 color: stage === s.id ? '#fff' : 'rgba(251,245,238,0.55)',
-                borderRadius: 999, height: 30,
-                paddingLeft: 12, paddingRight: 12,
+                borderRadius: 999, height: 32,
+                paddingLeft: 14, paddingRight: 14,
                 fontFamily: 'var(--font-manrope), system-ui',
-                fontSize: 12, fontWeight: 600,
+                fontSize: 12, fontWeight: 700,
                 cursor: 'pointer',
                 transition: 'background 0.18s',
               }}>
-                {s.id}. {s.label}
+                Etap {s.id}
               </button>
             ))}
           </div>

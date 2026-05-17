@@ -52,10 +52,10 @@ Krok 1/2 — wybór etapu leczenia. 5 kart:
 
 | Etap | Nazwa |
 |------|-------|
-| 1 | Skierowanie |
-| 2 | Biopsja |
-| 3 | Diagnoza |
-| 4 | Leczenie |
+| 1 | Badania |
+| 2 | Diagnostyka |
+| 3 | Leczenie operacyjne |
+| 4 | Leczenie okołooperacyjne |
 | 5 | Rehabilitacja |
 
 Przycisk „Dalej" → `/dashboard?stage=N`
@@ -82,7 +82,7 @@ Główny hub — 5 wariantów zależnych od etapu (`?stage=`).
 | Gdzie się zbadać | FindClinic |
 | Co zabrać na badanie | Checklist (typ: badanie) |
 | Co zabrać na konsylium | Checklist (typ: konsylium) |
-| Twoje skierowanie | DocumentsScreen |
+| Twoje badania | DocumentsScreen |
 | Moje dokumenty | DocumentsScreen |
 | Zapytaj asystentkę / Pytania do lekarza / Co oznacza biopsja | ChatScreen |
 | Moja ścieżka leczenia | `/timeline?stage=N` (nawigacja URL) |
@@ -96,10 +96,10 @@ Główny hub — 5 wariantów zależnych od etapu (`?stage=`).
 ### 4. Oś czasu `/timeline?stage=1–6&dash=N`
 Pionowa oś czasu leczenia — 6 etapów klinicznych:
 
-1. Wykrycie i badania
+1. Badania
 2. Diagnostyka
 3. Leczenie operacyjne
-4. Leczenie uzupełniające
+4. Leczenie okołooperacyjne
 5. Opieka po leczeniu
 6. Powrót do życia
 

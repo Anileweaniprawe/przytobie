@@ -43,40 +43,52 @@ function Icon({ name, size = 20, color, sw = 1.8 }) {
 const STAGES = [
   {
     id: 1, icon: 'search',
-    label: 'Wykrycie i badania',
-    subtitle: 'Mammografia, USG, skierowanie',
-    text: 'Ten etap masz już za sobą. Pierwsze badania potwierdziły potrzebę dalszej diagnostyki.',
+    label: 'Badania',
+    subtitle: 'Mammografia, USG, biopsja',
+    textDone: 'Ten etap masz już za sobą. Pierwsze badania pozwoliły na wstępną ocenę zmian.',
+    textActive: 'Jesteś na etapie badań diagnostycznych. Mammografia i USG to podstawa dalszych kroków.',
+    textUpcoming: 'To pierwszy krok — badania obrazowe, które pozwalają na wstępną ocenę zmian.',
   },
   {
     id: 2, icon: 'dna',
     label: 'Diagnostyka',
     subtitle: 'Biopsja, wyniki, konsultacje',
-    text: 'Biopsja i wyniki badań pozwoliły postawić dokładną diagnozę. To był najtrudniejszy etap oczekiwania.',
+    textDone: 'Biopsja i wyniki badań pozwoliły postawić dokładną diagnozę. To był trudny etap oczekiwania.',
+    textActive: 'Teraz najważniejsze jest postawienie dokładnej diagnozy. Czekanie na wyniki biopsji bywa trudne, ale to klucz do dobrego planu leczenia.',
+    textUpcoming: 'Jeśli badania obrazowe wykażą taką potrzebę, kolejnym krokiem będzie dokładniejsza diagnostyka, np. biopsja.',
   },
   {
     id: 3, icon: 'hospital',
     label: 'Leczenie operacyjne',
     subtitle: 'Konsylium · Operacja',
     special: true,
-    text: 'Twój zespół BCU przygotowuje plan leczenia. Pierwszym krokiem jest konsylium wielodyscyplinarne.',
+    textDone: 'Operacja i pobyt w szpitalu są już za Tobą. Teraz Twój organizm potrzebuje czasu na regenerację.',
+    textActive: 'Twój zespół BCU przygotowuje plan leczenia. Pierwszym krokiem jest konsylium wielodyscyplinarne i przygotowanie do operacji.',
+    textUpcoming: 'Na podstawie wyników diagnostyki, zespół lekarzy zaplanuje optymalny dla Ciebie zabieg operacyjny.',
   },
   {
     id: 4, icon: 'pill',
-    label: 'Leczenie uzupełniające',
+    label: 'Leczenie okołooperacyjne',
     subtitle: 'Chemioterapia · Radioterapia · Hormonoterapia',
-    text: 'Ten etap może obejmować chemioterapię, radioterapię lub hormonoterapię — zależnie od Twojego planu leczenia. Szczegóły omówisz z onkologiem po operacji.',
+    textDone: 'Główne leczenie onkologiczne zostało zakończone. To wielki sukces na Twojej ścieżce.',
+    textActive: 'To etap leczenia wspomagającego, który ma na celu zniszczenie ewentualnych pozostałych komórek nowotworowych. Szczegóły omówisz z onkologiem.',
+    textUpcoming: 'Zależnie od typu nowotworu i wyniku operacji, lekarz może zalecić chemioterapię, radioterapię lub leczenie hormonalne.',
   },
   {
     id: 5, icon: 'leaf',
     label: 'Opieka po leczeniu',
     subtitle: 'Rehabilitacja · Wizyty kontrolne',
-    text: 'Regularne kontrole i rehabilitacja są ważną częścią powrotu do zdrowia. Nie jesteś sama w tym etapie.',
+    textDone: 'Jesteś pod stałą opieką i regularnie się badasz. To daje spokój i poczucie bezpieczeństwa.',
+    textActive: 'Skupiamy się na powrocie do sprawności. Regularne kontrole i rehabilitacja to teraz Twoi sprzymierzeńcy.',
+    textUpcoming: 'Po zakończeniu aktywnego leczenia przejdziesz pod stałą opiekę poradni, by monitorować stan zdrowia i wspierać regenerację.',
   },
   {
     id: 6, icon: 'sun',
     label: 'Powrót do życia',
     subtitle: 'Rekonstrukcja · Wsparcie długoterminowe',
-    text: 'Wiele kobiet wraca do pełnej aktywności po leczeniu. Grupy Amazonek i inne organizacje mogą Ci w tym pomóc.',
+    textDone: 'Wróciłaś do swoich aktywności z nową siłą. Pamiętaj, że zawsze możesz liczyć na wsparcie społeczności.',
+    textActive: 'To czas na odzyskiwanie pełni sił i planowanie przyszłości. Możesz też rozważyć zabiegi rekonstrukcyjne.',
+    textUpcoming: 'Z czasem choroba stanie się tylko wspomnieniem, a Ty wrócisz do pełnej aktywności życiowej i zawodowej.',
   },
 ];
 
@@ -92,6 +104,8 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
   const done     = stage.id < activeStage;
   const active   = stage.id === activeStage;
   const upcoming = stage.id > activeStage;
+
+  const displayText = done ? stage.textDone : active ? stage.textActive : stage.textUpcoming;
 
   const nodeBg    = done ? TC.sageBg   : active ? TC.roseBg   : TC.grayBg;
   const nodeColor = done ? TC.sageIcon : active ? TC.roseIcon : TC.grayIcon;
@@ -224,7 +238,7 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
                     fontFamily: 'var(--font-manrope), system-ui',
                     fontSize: 14, lineHeight: 1.6,
                     color: PT.plumSoft, margin: 0,
-                  }}>{stage.text}</p>
+                  }}>{displayText}</p>
                 </div>
 
                 {/* pytania do lekarza */}
@@ -301,7 +315,7 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
                 fontSize: 14, lineHeight: 1.6,
                 color: upcoming ? 'rgba(58,42,63,0.42)' : PT.plumSoft,
                 margin: '4px 0 8px',
-              }}>{stage.text}</p>
+              }}>{displayText}</p>
             )}
           </div>
         )}
@@ -402,13 +416,13 @@ function TimelineContent() {
             background: TC.roseBg,
             borderRadius: 999, padding: '6px 14px',
           }}>
-            <div style={{ width: 8, height: 8, borderRadius: 4, background: TC.roseLine }}/>
+            <div style={{ width: 8, height: 8, borderRadius: 4, background: TC.roseLine, flexShrink: 0 }}/>
             <span style={{
               fontFamily: 'var(--font-manrope), system-ui',
               fontSize: 12, fontWeight: 600,
               color: TC.roseIcon, letterSpacing: '-0.01em',
             }}>
-              Etap {activeStage} z {STAGES.length} — {STAGES[activeStage - 1]?.label}
+              Etap {activeStage} z {STAGES.length}
             </span>
           </div>
         </div>
