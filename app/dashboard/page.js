@@ -695,7 +695,10 @@ function DashboardContent() {
         paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 32px)',
       }}>
         <Header/>
-        <HeroCard data={data} onCTA={stage === 4 ? () => setScreen('appointment-detail') : undefined}/>
+        <HeroCard data={data} onCTA={
+          stage === 1 ? () => setScreen('find-clinic') :
+          stage === 4 ? () => setScreen('appointment-detail') : undefined
+        }/>
         <PathStrip currentStage={stage}/>
         <QuickGrid items={data.grid} onItemClick={handleTileClick}/>
         {data.hasSymptomCheckin && <SymptomCheckin/>}

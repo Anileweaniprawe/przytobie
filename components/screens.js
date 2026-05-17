@@ -1,9 +1,12 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { PT } from '@/lib/theme';
 
+const DynamicMap = dynamic(() => import('./Map'), { ssr: false });
+
 // ─── Icons ────────────────────────────────────────────────────
-function Icon({ name, size = 20, color, sw = 1.8 }) {
+function Icon({ name, size = 20, color, sw = 1.8, fill = 'none' }) {
   const d = {
     arrowLeft: <><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></>,
     check:     <polyline points="20 6 9 17 4 12"/>,
@@ -26,9 +29,10 @@ function Icon({ name, size = 20, color, sw = 1.8 }) {
     mapPin:       <><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></>,
     externalLink: <><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></>,
     search:       <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,
+    star:         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>,
   };
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={fill}
          stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
       {d[name] ?? null}
     </svg>
@@ -103,67 +107,198 @@ function SectionLabel({ children }) {
 // ─── 1. FindClinic ────────────────────────────────────────────
 const CLINICS = [
   {
-    name: 'Centrum Onkologii — Instytut im. Marii Skłodowskiej-Curie',
-    city: 'Warszawa', dist: '2.4 km', phone: '+48 22 546 20 00',
+    name: 'Wojewódzkie Wielospecjalistyczne Centrum Onkologii i Traumatologii im. M. Kopernika',
+    city: 'ul. Pabianicka 62, Łódź', dist: '1.2 km', phone: '+48 42 689 52 00',
+    lat: 51.7245, lng: 19.4447,
+    rating: 4.0, reviews: 603,
+    bcu: true
   },
   {
-    name: 'Szpital Kliniczny im. Heliodora Święcickiego UM',
-    city: 'Poznań', dist: '12 km', phone: '+48 61 854 61 00',
+    name: 'Instytut Centrum Zdrowia Matki Polki',
+    city: 'ul. Rzgowska 281/289, Łódź', dist: '4.5 km', phone: '+48 42 271 20 00',
+    lat: 51.7061, lng: 19.4831,
+    rating: 4.2, reviews: 58,
+    bcu: true
   },
   {
-    name: 'Centrum Medyczne Femina — Oddział Onkologiczny',
-    city: 'Wrocław', dist: '8 km', phone: '+48 71 795 02 00',
+    name: 'Salve Medica',
+    city: 'ul. Szparagowa 10, Łódź', dist: '8.1 km', phone: '+48 42 254 64 00',
+    lat: 51.8020, lng: 19.3900,
+    rating: 4.6, reviews: 47,
+    bcu: false
   },
+  {
+    name: 'Szpital MSWiA',
+    city: 'ul. Północna 42, Łódź', dist: '3.4 km', phone: '+48 42 634 11 00',
+    lat: 51.7785, lng: 19.4673,
+    rating: 4.5, reviews: 19,
+    bcu: false
+  },
+  {
+    name: 'Uniwersytecki Szpital Kliniczny nr 2 Uniwersytetu Medycznego w Łodzi',
+    city: 'ul. Stefana Żeromskiego 113, Łódź', dist: '2.1 km', phone: '+48 42 639 34 00',
+    lat: 51.7589, lng: 19.4475,
+    rating: 3.9, reviews: 10,
+    bcu: false
+  },
+  {
+    name: 'Centralny Szpital Kliniczny Uniwersytetu Medycznego w Łodzi',
+    city: 'ul. Pomorska 251, Łódź', dist: '7.4 km', phone: '+48 42 675 72 98',
+    lat: 51.7788, lng: 19.5113,
+    rating: 3.9, reviews: 5,
+    bcu: false
+  }
 ];
 
 export function FindClinic({ onBack }) {
+  const [query, setQuery] = useState('');
+  const [view, setView] = useState('list'); // 'list' | 'map'
+
+  const filteredClinics = CLINICS.filter(c => {
+    const q = query.toLowerCase();
+    return c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q);
+  });
+
   return (
-    <Wrap title="Znajdź placówkę" onBack={onBack}>
-      <p style={{
-        fontFamily: 'var(--font-manrope), system-ui',
-        fontSize: 13, color: 'rgba(58,42,63,0.5)',
-        lineHeight: 1.5, marginBottom: 4,
-      }}>
-        Certyfikowane ośrodki Breast Cancer Unit (BCU)
-      </p>
-      <SectionLabel>W pobliżu</SectionLabel>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {CLINICS.map((c, i) => (
-          <Card key={i} style={{ padding: '16px 18px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
-              <span style={{
-                fontFamily: 'var(--font-manrope), system-ui',
-                fontWeight: 600, fontSize: 14, color: PT.plum,
-                lineHeight: 1.35, flex: 1,
-              }}>{c.name}</span>
-              <span style={{
-                flexShrink: 0,
-                background: PT.blush, color: PT.plum,
-                borderRadius: 999, padding: '3px 10px',
-                fontFamily: 'var(--font-manrope), system-ui',
-                fontSize: 11, fontWeight: 600,
-              }}>{c.dist}</span>
-            </div>
-            <div style={{
-              fontFamily: 'var(--font-manrope), system-ui',
-              fontSize: 12, color: 'rgba(58,42,63,0.45)', marginBottom: 14,
-            }}>{c.city}</div>
-            <button style={{
-              appearance: 'none',
-              border: `1.5px solid ${PT.plum}`,
-              background: 'transparent', color: PT.plum,
-              height: 36, borderRadius: 18,
-              paddingLeft: 16, paddingRight: 16,
-              fontFamily: 'var(--font-manrope), system-ui',
-              fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-            }}>
-              <Icon name="phone" size={13} color={PT.plum}/>
-              Zadzwoń
+    <Wrap title="Znajdź placówkę" onBack={onBack} noPad={view === 'map'}>
+      {view === 'list' && (
+        <>
+          {/* Wyszukiwarka */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            background: '#fff', borderRadius: 20,
+            padding: '0 16px', height: 44,
+            border: '1.5px solid rgba(58,42,63,0.12)',
+            marginBottom: 8,
+          }}>
+            <Icon name="search" size={18} color="rgba(58,42,63,0.4)"/>
+            <input
+              type="text"
+              placeholder="Szukaj po mieście lub nazwie..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              style={{
+                flex: 1, border: 'none', background: 'transparent',
+                outline: 'none', fontFamily: 'var(--font-manrope), system-ui',
+                fontSize: 14, color: PT.plum,
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10 }}>
+            <SectionLabel>{query ? 'Wyniki wyszukiwania' : 'W pobliżu'}</SectionLabel>
+            <button 
+              onClick={() => setView('map')}
+              style={{
+                appearance: 'none', background: 'transparent', border: 0,
+                color: PT.salmon, fontFamily: 'var(--font-manrope), system-ui',
+                fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 4,
+                padding: 0, marginBottom: 10
+              }}>
+              <Icon name="mapPin" size={14} color={PT.salmon}/> Pokaż na mapie
             </button>
-          </Card>
-        ))}
-      </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {filteredClinics.length > 0 ? filteredClinics.map((c, i) => (
+              <Card key={i} style={{ padding: '16px 18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
+                  <span style={{
+                    fontFamily: 'var(--font-manrope), system-ui',
+                    fontWeight: 600, fontSize: 14, color: PT.plum,
+                    lineHeight: 1.35, flex: 1,
+                  }}>
+                    {c.name}
+
+                  </span>
+                  <span style={{
+                    flexShrink: 0,
+                    background: PT.blush, color: PT.plum,
+                    borderRadius: 999, padding: '3px 10px',
+                    fontFamily: 'var(--font-manrope), system-ui',
+                    fontSize: 11, fontWeight: 600,
+                  }}>{c.dist}</span>
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-manrope), system-ui',
+                  fontSize: 12, color: 'rgba(58,42,63,0.45)', marginBottom: 8,
+                }}>{c.city}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 14 }}>
+                  <Icon name="star" size={14} color="#F5B800" fill="#F5B800"/>
+                  <span style={{ fontFamily: 'var(--font-manrope), system-ui', fontSize: 13, fontWeight: 700, color: PT.plum }}>{c.rating}</span>
+                  <span style={{ fontFamily: 'var(--font-manrope), system-ui', fontSize: 12, color: 'rgba(58,42,63,0.4)' }}>({c.reviews} ocen)</span>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <a href={`tel:${c.phone}`} style={{
+                    appearance: 'none', textDecoration: 'none',
+                    border: `1.5px solid ${PT.plum}`,
+                    background: 'transparent', color: PT.plum,
+                    height: 36, borderRadius: 18,
+                    paddingLeft: 16, paddingRight: 16,
+                    fontFamily: 'var(--font-manrope), system-ui',
+                    fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                  }}>
+                    <Icon name="phone" size={13} color={PT.plum}/>
+                    Zadzwoń
+                  </a>
+                  <button 
+                    onClick={() => setView('map')}
+                    style={{
+                      appearance: 'none',
+                      border: `1.5px solid rgba(58,42,63,0.12)`,
+                      background: 'transparent', color: PT.plumSoft,
+                      height: 36, borderRadius: 18,
+                      paddingLeft: 16, paddingRight: 16,
+                      fontFamily: 'var(--font-manrope), system-ui',
+                      fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                    }}>
+                    <Icon name="mapPin" size={13} color={PT.plumSoft}/>
+                    Mapa
+                  </button>
+                </div>
+              </Card>
+            )) : (
+              <div style={{
+                textAlign: 'center', padding: '30px 20px',
+                fontFamily: 'var(--font-manrope), system-ui',
+                color: 'rgba(58,42,63,0.4)', fontSize: 14,
+              }}>
+                Brak wyników dla "{query}"
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {view === 'map' && (
+        <div style={{ position: 'relative', height: 'calc(100vh - 120px)', marginTop: '-8px' }}>
+          <DynamicMap clinics={CLINICS} />
+          
+          <button 
+            onClick={() => setView('list')}
+            style={{
+              position: 'absolute',
+              bottom: 32,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 10,
+              appearance: 'none', border: 0,
+              background: PT.plum, color: PT.cream,
+              borderRadius: 26, height: 48,
+              paddingLeft: 24, paddingRight: 24,
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontSize: 14, fontWeight: 700, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              boxShadow: '0 8px 24px rgba(58,42,63,0.4)',
+            }}>
+            <Icon name="arrowLeft" size={16} color={PT.cream}/>
+            Powrót do listy
+          </button>
+        </div>
+      )}
     </Wrap>
   );
 }
