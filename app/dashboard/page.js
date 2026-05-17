@@ -670,9 +670,10 @@ function DashboardContent() {
   }, [stageParam]);
   const [screen, setScreen] = useState('dashboard');
   const [checklistType, setChecklistType] = useState('badanie');
+  const [chatTopic, setChatTopic] = useState(null);
   const data = STAGE_DATA[stage];
 
-  const back = () => setScreen('dashboard');
+  const back = () => { setScreen('dashboard'); setChatTopic(null); };
 
   function handleTileClick(item) {
     const label = item.label;
@@ -683,10 +684,10 @@ function DashboardContent() {
     const nav = {
       'Gdzie się zbadać':        () => setScreen('find-clinic'),
       'Co zabrać na badanie':    () => { setChecklistType('badanie');   setScreen('checklist'); },
-      'Zapytaj asystentkę':      () => setScreen('chat'),
+      'Zapytaj asystentkę':      () => { setChatTopic(null); setScreen('chat'); },
       'Twoje skierowanie':       () => setScreen('documents'),
-      'Co oznacza biopsja':      () => setScreen('chat'),
-      'Pytania do lekarza':      () => setScreen('chat'),
+      'Co oznacza biopsja':      () => { setChatTopic('Co oznacza biopsja?'); setScreen('chat'); },
+      'Pytania do lekarza':      () => { setChatTopic(null); setScreen('chat'); },
       'Wsparcie psychologiczne': () => setScreen('support'),
       'Moje dokumenty':          () => setScreen('documents'),
       'Umów wizytę':             () => setScreen('book-visit'),
@@ -704,7 +705,7 @@ function DashboardContent() {
 
   if (screen === 'find-clinic')    return <FindClinic onBack={back}/>;
   if (screen === 'checklist')      return <Checklist type={checklistType} onBack={back}/>;
-  if (screen === 'chat')           return <ChatScreen onBack={back}/>;
+  if (screen === 'chat')           return <ChatScreen onBack={back} initialMessage={chatTopic}/>;
   if (screen === 'documents')      return <DocumentsScreen onBack={back}/>;
   if (screen === 'book-visit')     return <BookVisit onBack={back}/>;
   if (screen === 'report-symptom') return <ReportSymptom onBack={back}/>;
@@ -729,6 +730,7 @@ function DashboardContent() {
         <Header/>
         <HeroCard data={data} onCTA={
           stage === 1 ? () => setScreen('find-clinic') :
+          stage === 3 ? () => { setChatTopic('Co to jest konsylium?'); setScreen('chat'); } :
           stage === 4 ? () => setScreen('appointment-detail') : undefined
         }/>
         <PathStrip currentStage={stage}/>

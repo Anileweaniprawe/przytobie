@@ -412,16 +412,29 @@ const CHIP_REPLIES = {
   'Kiedy dostanę wyniki?': 'Zazwyczaj koordynatorka BCU kontaktuje się w ciągu 2–3 dni roboczych po konsylium z ustalonym planem leczenia.',
 };
 
-export function ChatScreen({ onBack }) {
+export function ChatScreen({ onBack, initialMessage }) {
   const [messages, setMessages] = useState(() => {
     const name = typeof window !== 'undefined' ? (localStorage.getItem('userName') || 'Agnieszko') : 'Agnieszko';
-    return [
+    
+    // We start with a base greeting
+    const baseMsgs = [
       { from: 'a', text: `Cześć ${name}, jestem Twoją asystentką BCU. W czym mogę Ci dziś pomóc?` },
-      ...CHAT_REPLIES,
     ];
+
+    // If there is an initial message requested from outside (e.g. from the Dashboard CTA)
+    if (initialMessage) {
+      baseMsgs.push({ from: 'u', text: initialMessage });
+      // Provide a standard response for this topic
+      baseMsgs.push({ from: 'a', text: CHIP_REPLIES[initialMessage] ?? 'Konsylium to spotkanie specjalistów — onkologa, chirurga, radiologa i patologa — którzy wspólnie ustalają najlepszy plan leczenia. Zazwyczaj trwa 30–60 minut i możesz zadawać pytania oraz wyrażać swoje oczekiwania.' });
+    } else {
+      // If no initialMessage, just load the default chat history mockup
+      baseMsgs.push(...CHAT_REPLIES);
+    }
+    
+    return baseMsgs;
   });
   const [input, setInput] = useState('');
-  const [chipsUsed, setChipsUsed] = useState(false);
+  const [chipsUsed, setChipsUsed] = useState(!!initialMessage);
 
   function send(text) {
     if (!text.trim()) return;
