@@ -90,7 +90,6 @@ const STAGE_DATA = {
     heroSubtitle: 'Następny krok: Konsylium wielodyscyplinarne',
     heroCTA: 'Co to jest konsylium?',
     grid: [
-      { label: 'Moja ścieżka leczenia',  icon: 'map'       },
       { label: 'Umów wizytę',            icon: 'calendar'  },
       { label: 'Co zabrać na konsylium', icon: 'clipboard' },
       { label: 'Zapytaj asystentkę',     icon: 'chat'      },
@@ -394,18 +393,31 @@ function HeroCard({ data, onCTA }) {
 
 function PathStrip({ currentStage }) {
   return (
-    <div style={{
-      margin: '18px 16px 0',
-      background: PT.paper,
-      borderRadius: 20,
-      padding: '16px 18px',
-    }}>
+    <Link href={`/timeline?stage=${currentStage}&dash=${currentStage}`} style={{ textDecoration: 'none', display: 'block' }}>
       <div style={{
-        fontFamily: 'var(--font-manrope), system-ui',
-        fontSize: 11, fontWeight: 600,
-        letterSpacing: '0.07em', textTransform: 'uppercase',
-        color: 'rgba(58,42,63,0.4)', marginBottom: 14,
-      }}>Twoja ścieżka</div>
+        margin: '18px 16px 0',
+        background: PT.paper,
+        borderRadius: 20,
+        padding: '16px 18px',
+        boxShadow: '0 2px 8px rgba(58,42,63,0.04)',
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 11, fontWeight: 600,
+          letterSpacing: '0.07em', textTransform: 'uppercase',
+          color: 'rgba(58,42,63,0.4)', marginBottom: 14,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+        }}>
+          <span>Twoja ścieżka</span>
+          <span style={{ 
+            display: 'flex', alignItems: 'center', gap: 4, 
+            color: PT.plumSoft, textTransform: 'none', letterSpacing: '0',
+            fontSize: 10, opacity: 0.8
+          }}>
+            Szczegóły
+            <Icon name="arrow" size={12} color={PT.plumSoft}/>
+          </span>
+        </div>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
         {STAGE_META.map((stage, idx) => {
           const done   = stage.id < currentStage;
@@ -472,7 +484,8 @@ function PathStrip({ currentStage }) {
         })}
       </div>
     </div>
-  );
+  </Link>
+);
 }
 
 function QuickGrid({ items, onItemClick }) {
@@ -899,10 +912,6 @@ function DashboardContent() {
 
   function handleTileClick(item) {
     const label = item.label;
-    if (label === 'Moja ścieżka leczenia') {
-      router.push(`/timeline?stage=${stage}&dash=${stage}`);
-      return;
-    }
     const nav = {
       'Gdzie się zbadać':        () => setScreen('find-clinic'),
       'Co zabrać na badanie':    () => { setChecklistType('badanie');   setScreen('checklist'); },
