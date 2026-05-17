@@ -644,51 +644,139 @@ function SymptomCheckin() {
 }
 
 const POST_TREATMENT_CHIPS = [
-  { label: 'Amazonki',          icon: 'heart'    },
+  { 
+    label: 'Amazonki',          
+    icon: 'heart',
+    description: 'Stowarzyszenie Amazonki to ruch na rzecz kobiet po leczeniu raka piersi, oferujący wsparcie psychologiczne, rehabilitację oraz pomoc w powrocie do zdrowia.',
+    url: 'https://amazonkifederacja.pl'
+  },
   { label: 'Peruki onkologiczne', icon: 'sparkle' },
   { label: 'Tatuaż medyczny',   icon: 'leaf'     },
 ];
 
 function PostTreatmentCard() {
+  const [showInfo, setShowInfo] = useState(null);
+
   return (
-    <div style={{
-      margin: '14px 16px 0',
-      background: `linear-gradient(145deg, #EEF8F4, #C8E8DC)`,
-      borderRadius: 22,
-      padding: '18px 18px 16px',
-    }}>
+    <>
       <div style={{
-        fontFamily: 'var(--font-manrope), system-ui',
-        fontWeight: 600, fontSize: 15,
-        color: PT.plum, letterSpacing: '-0.01em',
-        marginBottom: 2,
-      }}>Opieka po leczeniu</div>
-      <p style={{
-        fontFamily: 'var(--font-manrope), system-ui',
-        fontSize: 12, color: 'rgba(58,42,63,0.5)',
-        marginBottom: 14,
-      }}>Zasoby, które mogą Ci pomóc</p>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-        {POST_TREATMENT_CHIPS.map((chip, i) => (
-          <button key={i} style={{
-            appearance: 'none',
-            border: '1.5px solid rgba(58,42,63,0.14)',
-            background: 'rgba(255,255,255,0.7)',
-            borderRadius: 999, height: 36,
-            paddingLeft: 14, paddingRight: 14,
-            display: 'flex', alignItems: 'center', gap: 7,
-            cursor: 'pointer',
-          }}>
-            <Icon name={chip.icon} size={14} color={PT.plumSoft}/>
-            <span style={{
-              fontFamily: 'var(--font-manrope), system-ui',
-              fontSize: 13, fontWeight: 500,
-              color: PT.plum, letterSpacing: '-0.005em',
-            }}>{chip.label}</span>
-          </button>
-        ))}
+        margin: '14px 16px 0',
+        background: `linear-gradient(145deg, #EEF8F4, #C8E8DC)`,
+        borderRadius: 22,
+        padding: '18px 18px 16px',
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontWeight: 600, fontSize: 15,
+          color: PT.plum, letterSpacing: '-0.01em',
+          marginBottom: 2,
+        }}>Opieka po leczeniu</div>
+        <p style={{
+          fontFamily: 'var(--font-manrope), system-ui',
+          fontSize: 12, color: 'rgba(58,42,63,0.5)',
+          marginBottom: 14,
+        }}>Zasoby, które mogą Ci pomóc</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {POST_TREATMENT_CHIPS.map((chip, i) => (
+            <button 
+              key={i} 
+              onClick={() => chip.description && setShowInfo(chip)}
+              style={{
+                appearance: 'none',
+                border: '1.5px solid rgba(58,42,63,0.14)',
+                background: 'rgba(255,255,255,0.7)',
+                borderRadius: 999, height: 36,
+                paddingLeft: 14, paddingRight: 14,
+                display: 'flex', alignItems: 'center', gap: 7,
+                cursor: chip.description ? 'pointer' : 'default',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseDown={e => { if(chip.description) e.currentTarget.style.transform = 'scale(0.96)'; }}
+              onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              <Icon name={chip.icon} size={14} color={PT.plumSoft}/>
+              <span style={{
+                fontFamily: 'var(--font-manrope), system-ui',
+                fontSize: 13, fontWeight: 500,
+                color: PT.plum, letterSpacing: '-0.005em',
+              }}>{chip.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+
+      {showInfo && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 24,
+        }}>
+          {/* Backdrop */}
+          <div 
+            onClick={() => setShowInfo(null)}
+            style={{
+              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(58,42,63,0.4)',
+              backdropFilter: 'blur(10px)',
+              transition: 'opacity 0.3s ease',
+            }} 
+          />
+          
+          {/* Modal Content */}
+          <div className="fade-up" style={{
+            position: 'relative', width: '100%', maxWidth: 340,
+            background: '#fff', borderRadius: 28,
+            padding: 24, boxShadow: '0 20px 40px rgba(58,42,63,0.2)',
+          }}>
+             <div style={{ 
+               width: 48, height: 48, borderRadius: 24, 
+               background: '#F0F7F5', display: 'flex', 
+               alignItems: 'center', justifyContent: 'center',
+               marginBottom: 18 
+             }}>
+               <Icon name={showInfo.icon} size={24} color={PT.plum}/>
+             </div>
+             
+             <h3 style={{
+               fontFamily: 'var(--font-manrope), system-ui',
+               fontSize: 19, fontWeight: 700, color: PT.plum,
+               marginBottom: 10, letterSpacing: '-0.02em'
+             }}>{showInfo.label}</h3>
+             
+             <p style={{
+               fontFamily: 'var(--font-manrope), system-ui',
+               fontSize: 14, lineHeight: 1.6, color: 'rgba(58,42,63,0.7)',
+               marginBottom: 28
+             }}>{showInfo.description}</p>
+             
+             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+               <a 
+                 href={showInfo.url} 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 style={{
+                   height: 50, borderRadius: 25, background: PT.plum,
+                   color: '#fff', display: 'flex', alignItems: 'center',
+                   justifyContent: 'center', textDecoration: 'none',
+                   fontFamily: 'var(--font-manrope), system-ui',
+                   fontSize: 15, fontWeight: 600,
+                 }}
+               >Dowiedz się więcej</a>
+               
+               <button 
+                 onClick={() => setShowInfo(null)}
+                 style={{
+                   height: 44, background: 'none', border: 0,
+                   color: PT.plumSoft, fontFamily: 'var(--font-manrope), system-ui',
+                   fontSize: 14, fontWeight: 500, cursor: 'pointer'
+                 }}
+               >Zamknij</button>
+             </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
