@@ -557,6 +557,8 @@ function MoodFace({ mood, selected, onClick }) {
 
 function SymptomCheckin() {
   const [mood, setMood] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   return (
     <div style={{
       margin: '14px 16px 0',
@@ -564,41 +566,78 @@ function SymptomCheckin() {
       borderRadius: 22,
       padding: '18px 18px 16px',
     }}>
-      <div style={{
-        fontFamily: 'var(--font-manrope), system-ui',
-        fontWeight: 600, fontSize: 15,
-        color: PT.plum, marginBottom: 4,
-        letterSpacing: '-0.01em',
-      }}>Jak się dziś czujesz?</div>
-      <p style={{
-        fontFamily: 'var(--font-manrope), system-ui',
-        fontSize: 12, color: 'rgba(58,42,63,0.45)',
-        marginBottom: 16,
-      }}>Twoja odpowiedź trafi do koordynatorki BCU</p>
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', paddingLeft: 2, paddingRight: 2,
-      }}>
-        {MOODS.map(m => (
-          <MoodFace
-            key={m.score}
-            mood={m}
-            selected={mood === m.score}
-            onClick={() => setMood(m.score)}
-          />
-        ))}
-      </div>
-      {mood && (
-        <button style={{
-          width: '100%',
-          appearance: 'none', border: 0,
-          background: PT.plum, color: PT.cream,
-          height: 40, borderRadius: 20,
-          fontFamily: 'var(--font-manrope), system-ui',
-          fontSize: 14, fontWeight: 600,
-          cursor: 'pointer', marginTop: 14,
+      {isSubmitted ? (
+        <div className="fade-up" style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          textAlign: 'center', padding: '4px 0 8px',
         }}>
-          Wyślij
-        </button>
+          <div style={{
+            width: 48, height: 48, borderRadius: 24,
+            background: `${PT.salmon}20`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: 12,
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                    fill={PT.salmon} />
+            </svg>
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontWeight: 600, fontSize: 15,
+            color: PT.plum, marginBottom: 6,
+            letterSpacing: '-0.01em',
+          }}>Dziękujemy!</div>
+          <p style={{
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontSize: 13, color: 'rgba(58,42,63,0.55)',
+            lineHeight: 1.45, margin: 0, padding: '0 10px',
+          }}>
+            Twoja odpowiedź trafiła do koordynatorki BCU. Jesteśmy tu dla Ciebie.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div style={{
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontWeight: 600, fontSize: 15,
+            color: PT.plum, marginBottom: 4,
+            letterSpacing: '-0.01em',
+          }}>Jak się dziś czujesz?</div>
+          <p style={{
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontSize: 12, color: 'rgba(58,42,63,0.45)',
+            marginBottom: 16,
+          }}>Twoja odpowiedź trafi do koordynatorki BCU</p>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', paddingLeft: 2, paddingRight: 2,
+          }}>
+            {MOODS.map(m => (
+              <MoodFace
+                key={m.score}
+                mood={m}
+                selected={mood === m.score}
+                onClick={() => setMood(m.score)}
+              />
+            ))}
+          </div>
+          {mood && (
+            <button
+              onClick={() => setIsSubmitted(true)}
+              style={{
+                width: '100%',
+                appearance: 'none', border: 0,
+                background: PT.plum, color: PT.cream,
+                height: 40, borderRadius: 20,
+                fontFamily: 'var(--font-manrope), system-ui',
+                fontSize: 14, fontWeight: 600,
+                cursor: 'pointer', marginTop: 14,
+              }}
+            >
+              Wyślij
+            </button>
+          )}
+        </>
       )}
     </div>
   );
@@ -731,7 +770,8 @@ function DashboardContent() {
         <HeroCard data={data} onCTA={
           stage === 1 ? () => setScreen('find-clinic') :
           stage === 3 ? () => { setChatTopic('Co to jest konsylium?'); setScreen('chat'); } :
-          stage === 4 ? () => setScreen('appointment-detail') : undefined
+          stage === 4 ? () => setScreen('appointment-detail') : 
+          stage === 5 ? () => setScreen('rehab-plan') : undefined
         }/>
         <PathStrip currentStage={stage}/>
         <QuickGrid items={data.grid} onItemClick={handleTileClick}/>
