@@ -128,15 +128,48 @@ const STAGE_DATA = {
 // ─── Sub-components ───────────────────────────────────────────
 
 function Header() {
+  const router = useRouter();
   const dateStr = new Date().toLocaleDateString('pl-PL', {
     weekday: 'long', day: 'numeric', month: 'long',
   });
   const [userName, setUserName] = useState('Agnieszko');
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [bellToastVisible, setBellToastVisible] = useState(false);
+  const menuRef = useRef(null);
+  const bellToastRef = useRef(null);
+
   useEffect(() => {
     const stored = localStorage.getItem('userName');
     if (stored) setUserName(stored);
+
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => { 
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (bellToastRef.current) clearTimeout(bellToastRef.current);
+    };
   }, []);
+
   const initial = userName[0]?.toUpperCase() ?? 'A';
+
+  function handleBellClick() {
+    setBellToastVisible(true);
+    if (bellToastRef.current) clearTimeout(bellToastRef.current);
+    bellToastRef.current = setTimeout(() => setBellToastVisible(false), 3000);
+  }
+
+  function handleLogout() {
+    localStorage.clear();
+    router.push('/');
+  }
+
+  function handleSettings() {
+    router.push('/onboarding');
+  }
 
   return (
     <div style={{
@@ -145,13 +178,61 @@ function Header() {
       paddingBottom: 4,
       paddingLeft: 20, paddingRight: 20,
     }}>
-      <div style={{
-        width: 42, height: 42, borderRadius: 21, flexShrink: 0,
-        background: `linear-gradient(135deg, ${PT.blush}, ${PT.lilac})`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: 'var(--font-manrope), system-ui',
-        fontWeight: 700, fontSize: 17, color: PT.plum,
-      }}>{initial}</div>
+      <div ref={menuRef} style={{ position: 'relative', flexShrink: 0 }}>
+        <div 
+          onClick={() => setUserMenuOpen(!userMenuOpen)}
+          style={{
+            width: 42, height: 42, borderRadius: 21,
+            background: `linear-gradient(135deg, ${PT.blush}, ${PT.lilac})`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-manrope), system-ui',
+            fontWeight: 700, fontSize: 17, color: PT.plum,
+            cursor: 'pointer', transition: 'opacity 0.2s'
+          }}
+          onMouseDown={(e) => e.currentTarget.style.opacity = 0.7}
+          onMouseUp={(e) => e.currentTarget.style.opacity = 1}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = 1}
+        >{initial}</div>
+
+        {/* User Dropdown Menu */}
+        {userMenuOpen && (
+          <div style={{
+            position: 'absolute',
+            top: 50,
+            left: 0,
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.5)',
+            boxShadow: '0 8px 32px rgba(58, 42, 63, 0.1)',
+            borderRadius: 12,
+            padding: '8px 0',
+            minWidth: 140,
+            zIndex: 50,
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div 
+              onClick={handleSettings}
+              style={{
+                padding: '10px 16px', fontSize: 14, color: PT.plum, cursor: 'pointer',
+                fontFamily: 'var(--font-manrope), system-ui', fontWeight: 500
+              }}
+            >
+              Ustawienia
+            </div>
+            <div 
+              onClick={handleLogout}
+              style={{
+                padding: '10px 16px', fontSize: 14, color: PT.salmon, cursor: 'pointer',
+                fontFamily: 'var(--font-manrope), system-ui', fontWeight: 600
+              }}
+            >
+              Wyloguj
+            </div>
+          </div>
+        )}
+      </div>
+
       <div style={{ flex: 1 }}>
         <div style={{
           fontFamily: 'var(--font-manrope), system-ui',
@@ -164,12 +245,43 @@ function Header() {
           marginTop: 1, textTransform: 'capitalize',
         }}>{dateStr}</div>
       </div>
-      <div style={{
-        width: 36, height: 36, borderRadius: 18,
-        background: PT.paper,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <Icon name="bell" size={18} color={PT.plumSoft}/>
+
+      <div style={{ position: 'relative' }}>
+        <div 
+          onClick={handleBellClick}
+          style={{
+            width: 36, height: 36, borderRadius: 18,
+            background: PT.paper,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', transition: 'opacity 0.2s'
+          }}
+          onMouseDown={(e) => e.currentTarget.style.opacity = 0.7}
+          onMouseUp={(e) => e.currentTarget.style.opacity = 1}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = 1}
+        >
+          <Icon name="bell" size={18} color={PT.plumSoft}/>
+        </div>
+        
+        {/* Bell Toast */}
+        <div style={{
+          position: 'absolute',
+          top: 45,
+          right: 0,
+          background: 'rgba(58,42,63,0.9)',
+          color: '#fff',
+          padding: '8px 12px',
+          borderRadius: 8,
+          fontSize: 12,
+          fontFamily: 'var(--font-manrope), system-ui',
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          opacity: bellToastVisible ? 1 : 0,
+          transform: bellToastVisible ? 'translateY(0)' : 'translateY(-8px)',
+          transition: 'all 0.3s ease',
+          zIndex: 50
+        }}>
+          Brak nowych powiadomień
+        </div>
       </div>
     </div>
   );
