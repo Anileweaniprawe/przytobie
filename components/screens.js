@@ -78,15 +78,18 @@ function Wrap({ title, onBack, children, noPad }) {
   );
 }
 
-function Card({ children, style }) {
+function Card({ children, style, ...props }) {
   return (
-    <div style={{
-      background: '#fff',
-      borderRadius: 20,
-      boxShadow: '0 1px 8px rgba(58,42,63,0.07)',
-      overflow: 'hidden',
-      ...style,
-    }}>
+    <div 
+      style={{
+        background: '#fff',
+        borderRadius: 20,
+        boxShadow: '0 1px 8px rgba(58,42,63,0.07)',
+        overflow: 'hidden',
+        ...style,
+      }}
+      {...props}
+    >
       {children}
     </div>
   );
@@ -692,14 +695,19 @@ export function BookVisit({ onBack }) {
 
 // ─── 6. AddVisitWizard ────────────────────────────────────────
 const WIZARD_DOCTORS = [
-  { id: 'd1', name: 'dr M. Kowalska', spec: 'Onkolog', place: 'Centrum Onkologii', color: PT.lilac },
-  { id: 'd2', name: 'dr A. Wiśniewska', spec: 'Chirurg', place: 'Poliklinika BCU', color: PT.blush }
+  { id: 'd1', name: 'dr M. Kowalska', spec: 'Onkolog', place: 'Centrum Onkologii', color: PT.lilac, lat: 51.7245, lng: 19.4447, rating: 4.8, reviews: 124, price: 250 },
+  { id: 'd2', name: 'dr A. Wiśniewska', spec: 'Chirurg', place: 'Poliklinika BCU', color: PT.blush, lat: 51.7589, lng: 19.4475, rating: 4.9, reviews: 310, price: 300 },
+  { id: 'd3', name: 'dr J. Nowak', spec: 'Radiolog', place: 'Szpital Wojewódzki', color: PT.salmon, lat: 51.7785, lng: 19.4673, rating: 4.5, reviews: 85, price: 200 },
+  { id: 'd4', name: 'dr K. Zieliński', spec: 'Radioterapeuta', place: 'Centrum Onkologii', color: PT.creamDeep, lat: 51.7245, lng: 19.4447, rating: 4.7, reviews: 156, price: 280 },
+  { id: 'd5', name: 'dr M. Mazur', spec: 'Chirurg onkolog', place: 'Salve Medica', color: PT.lilacDeep, lat: 51.8020, lng: 19.3900, rating: 5.0, reviews: 420, price: 350 },
+  { id: 'd6', name: 'dr E. Wójcik', spec: 'Onkolog kliniczny', place: 'Instytut CZMP', color: PT.blushDeep, lat: 51.7061, lng: 19.4831, rating: 4.6, reviews: 92, price: 220 }
 ];
 
 export function AddVisitWizard({ onBack, onComplete }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ doctor: null, date: null, time: null });
   const [isSuccess, setIsSuccess] = useState(false);
+  const [viewStep1, setViewStep1] = useState('list'); // 'list' | 'map'
 
   const MOCK_DATES = ['14 maja', '15 maja', '16 maja', '17 maja', '18 maja'];
   const MOCK_TIMES = ['09:00', '10:30', '12:15', '14:00', '15:30'];
@@ -708,6 +716,7 @@ export function AddVisitWizard({ onBack, onComplete }) {
   const handleSelectDoctor = (doc) => {
     setFormData({ ...formData, doctor: doc });
     setStep(2);
+    setViewStep1('list'); // reset for next time
   };
 
   const handleSelectTime = (time) => {
@@ -743,24 +752,87 @@ export function AddVisitWizard({ onBack, onComplete }) {
   }
 
   return (
-    <Wrap title="Dodaj wizytę" onBack={step === 1 ? onBack : () => setStep(step - 1)}>
+    <Wrap title="Dodaj wizytę" onBack={step === 1 ? onBack : () => setStep(step - 1)} noPad={step === 1 && viewStep1 === 'map'}>
       {step === 1 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <SectionLabel>Wybierz specjalistę</SectionLabel>
-          {WIZARD_DOCTORS.map(doc => (
-            <Card key={doc.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectDoctor(doc)}>
-              <div style={{ display: 'flex', padding: 16, alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 40, height: 40, borderRadius: '50%', background: doc.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name="users" size={20} color={PT.plum} />
-                </div>
-                <div>
-                  <div style={{ fontWeight: 700, color: PT.plum }}>{doc.name}</div>
-                  <div style={{ fontSize: 13, color: 'rgba(58,42,63,0.6)' }}>{doc.spec} • {doc.place}</div>
-                </div>
+        <>
+          {viewStep1 === 'list' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <SectionLabel>Wybierz specjalistę</SectionLabel>
+                <button 
+                  onClick={() => setViewStep1('map')}
+                  style={{
+                    appearance: 'none', background: 'transparent', border: 0,
+                    color: PT.salmon, fontFamily: 'var(--font-manrope), system-ui',
+                    fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: 0, marginBottom: 10
+                  }}>
+                  <Icon name="mapPin" size={14} color={PT.salmon}/> Szukaj na mapie
+                </button>
               </div>
-            </Card>
-          ))}
-        </div>
+              {WIZARD_DOCTORS.map(doc => (
+                <Card key={doc.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectDoctor(doc)}>
+                  <div style={{ display: 'flex', padding: 16, alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 48, height: 48, borderRadius: '50%', background: doc.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Icon name="users" size={24} color={PT.plum} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ fontWeight: 700, color: PT.plum, fontSize: 15 }}>{doc.name}</div>
+                        <div style={{ fontWeight: 700, color: PT.plum, fontSize: 15 }}>{doc.price} zł</div>
+                      </div>
+                      <div style={{ fontSize: 13, color: 'rgba(58,42,63,0.6)', marginBottom: 4 }}>{doc.spec} • {doc.place}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Icon name="star" size={12} color="#F5B800" fill="#F5B800"/>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: PT.plum }}>{doc.rating}</span>
+                        <span style={{ fontSize: 12, color: 'rgba(58,42,63,0.4)' }}>({doc.reviews} opinii)</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div style={{ position: 'relative', height: 'calc(100vh - 120px)', marginTop: '-8px' }}>
+              <DynamicMap 
+                clinics={WIZARD_DOCTORS.map(d => ({ ...d, city: d.place, dist: 'Wybierz' }))} 
+                userLocation={[51.7592, 19.4560]}
+              />
+              <div style={{ 
+                position: 'absolute', bottom: 32, left: 20, right: 20, zIndex: 10,
+                display: 'flex', justifyContent: 'center'
+              }}>
+                <button 
+                  onClick={() => setViewStep1('list')}
+                  style={{
+                    appearance: 'none', border: 0,
+                    background: PT.plum, color: PT.cream,
+                    borderRadius: 26, height: 48,
+                    paddingLeft: 24, paddingRight: 24,
+                    fontFamily: 'var(--font-manrope), system-ui',
+                    fontSize: 14, fontWeight: 700, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    boxShadow: '0 8px 24px rgba(58,42,63,0.4)',
+                  }}>
+                  <Icon name="arrowLeft" size={16} color={PT.cream}/>
+                  Powrót do listy
+                </button>
+              </div>
+              
+              {/* Overlay info for map selection */}
+              <div style={{
+                position: 'absolute', top: 20, left: 20, right: 20, zIndex: 10,
+                background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)',
+                padding: '12px 16px', borderRadius: 16, border: '1px solid rgba(58,42,63,0.1)',
+                textAlign: 'center', pointerEvents: 'none'
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: PT.plum }}>Wybierz lekarza na mapie</div>
+                <div style={{ fontSize: 11, color: 'rgba(58,42,63,0.6)' }}>Kliknij w pineskę, aby zobaczyć szczegóły</div>
+              </div>
+            </div>
+          )}
+        </>
       )}
       {step === 2 && (
         <div style={{ animation: 'fadeUp 0.3s ease' }}>
@@ -811,10 +883,28 @@ export function AddVisitWizard({ onBack, onComplete }) {
                 <div style={{ fontWeight: 700, color: PT.plum, fontSize: 16 }}>{formData.date}, godz. {formData.time}</div>
               </div>
               <div style={{ height: 1, background: 'rgba(58,42,63,0.05)', margin: '0 -20px 16px -20px' }} />
-              <div>
+              <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 13, color: 'rgba(58,42,63,0.6)', marginBottom: 4 }}>Z kim i gdzie</div>
                 <div style={{ fontWeight: 700, color: PT.plum }}>{formData.doctor?.name}</div>
                 <div style={{ fontSize: 14, color: 'rgba(58,42,63,0.8)' }}>{formData.doctor?.place}</div>
+              </div>
+
+              {/* Map Preview */}
+              <div style={{ 
+                height: 120, borderRadius: 16, overflow: 'hidden', 
+                position: 'relative', border: '1px solid rgba(58,42,63,0.05)' 
+              }}>
+                <DynamicMap 
+                  clinics={CLINICS.filter(c => c.name.includes(formData.doctor?.place) || formData.doctor?.place.includes(c.name))} 
+                  userLocation={
+                    CLINICS.find(c => c.name.includes(formData.doctor?.place) || formData.doctor?.place.includes(c.name))
+                    ? [
+                        CLINICS.find(c => c.name.includes(formData.doctor?.place) || formData.doctor?.place.includes(c.name)).lat,
+                        CLINICS.find(c => c.name.includes(formData.doctor?.place) || formData.doctor?.place.includes(c.name)).lng
+                      ]
+                    : [51.7592, 19.4560]
+                  }
+                />
               </div>
             </div>
           </Card>
