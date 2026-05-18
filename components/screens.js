@@ -682,7 +682,21 @@ export function BookVisit({ onBack }) {
   );
 }
 
-// ─── 6. ReportSymptom ─────────────────────────────────────────
+// ─── 6. AddVisitWizard ────────────────────────────────────────
+export function AddVisitWizard({ onBack, onComplete }) {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({ doctor: null, date: null, time: null });
+
+  return (
+    <Wrap title="Dodaj wizytę" onBack={onBack}>
+      <div style={{ padding: '20px 0' }}>
+        Step: {step}
+      </div>
+    </Wrap>
+  );
+}
+
+// ─── 7. ReportSymptom ─────────────────────────────────────────
 const SEVERITIES = [
   { level: 1, label: 'Łagodny',      desc: 'Ledwo odczuwalny',                bg: '#EAF2E7', border: '#A8C5A0', text: '#4E7E4C' },
   { level: 2, label: 'Umiarkowany',  desc: 'Wyraźny, ale tolerowany',          bg: '#FFF8E8', border: '#D4B870', text: '#8A6E30' },
