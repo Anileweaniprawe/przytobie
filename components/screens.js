@@ -691,6 +691,7 @@ const WIZARD_DOCTORS = [
 export function AddVisitWizard({ onBack, onComplete }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ doctor: null, date: null, time: null });
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const MOCK_DATES = ['14 maja', '15 maja', '16 maja', '17 maja', '18 maja'];
   const MOCK_TIMES = ['09:00', '10:30', '12:15', '14:00', '15:30'];
@@ -705,6 +706,33 @@ export function AddVisitWizard({ onBack, onComplete }) {
     setFormData({ ...formData, date: activeDate, time: time });
     setStep(3);
   };
+
+  const handleConfirm = () => {
+    setIsSuccess(true);
+    setTimeout(() => {
+      onComplete && onComplete(formData);
+    }, 2500);
+  };
+
+  if (isSuccess) {
+    return (
+      <Wrap title="Dodaj wizytę" onBack={onBack}>
+        <div style={{ textAlign: 'center', marginTop: 60, animation: 'fadeUp 0.4s ease' }}>
+          <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#EAF2E7', margin: '0 auto 24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4E7E4C' }}>
+            <Icon name="check" size={40} />
+          </div>
+          <h2 style={{ fontFamily: 'var(--font-newsreader), serif', fontStyle: 'italic', color: PT.plum, fontSize: 28, marginBottom: 12 }}>Wizyta zaplanowana</h2>
+          <p style={{ color: 'rgba(58,42,63,0.7)', lineHeight: 1.5 }}>
+            {formData.date} o {formData.time}<br/>
+            {formData.doctor?.name}
+          </p>
+          <button onClick={onBack} style={{ marginTop: 40, background: PT.plum, color: PT.cream, border: 'none', padding: '16px 32px', borderRadius: 30, fontWeight: 600, width: '100%', cursor: 'pointer' }}>
+            Wróć do wizyt
+          </button>
+        </div>
+      </Wrap>
+    );
+  }
 
   return (
     <Wrap title="Dodaj wizytę" onBack={step === 1 ? onBack : () => setStep(step - 1)}>
@@ -766,7 +794,31 @@ export function AddVisitWizard({ onBack, onComplete }) {
         </div>
       )}
       {step === 3 && (
-        <div style={{ padding: '20px 0' }}>Step: {step}</div>
+        <div style={{ animation: 'fadeUp 0.3s ease' }}>
+          <SectionLabel>Podsumowanie</SectionLabel>
+          <Card>
+            <div style={{ padding: 20 }}>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 13, color: 'rgba(58,42,63,0.6)', marginBottom: 4 }}>Kiedy</div>
+                <div style={{ fontWeight: 700, color: PT.plum, fontSize: 16 }}>{formData.date}, godz. {formData.time}</div>
+              </div>
+              <div style={{ height: 1, background: 'rgba(58,42,63,0.05)', margin: '0 -20px 16px -20px' }} />
+              <div>
+                <div style={{ fontSize: 13, color: 'rgba(58,42,63,0.6)', marginBottom: 4 }}>Z kim i gdzie</div>
+                <div style={{ fontWeight: 700, color: PT.plum }}>{formData.doctor?.name}</div>
+                <div style={{ fontSize: 14, color: 'rgba(58,42,63,0.8)' }}>{formData.doctor?.place}</div>
+              </div>
+            </div>
+          </Card>
+          
+          <button onClick={handleConfirm} style={{
+            width: '100%', marginTop: 32, border: 0, background: PT.plum, color: PT.cream,
+            borderRadius: 26, height: 56, fontSize: 16, fontWeight: 600, cursor: 'pointer',
+            boxShadow: '0 8px 20px -6px rgba(58,42,63,0.35)'
+          }}>
+            Potwierdź wizytę
+          </button>
+        </div>
       )}
     </Wrap>
   );
