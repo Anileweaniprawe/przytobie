@@ -692,9 +692,18 @@ export function AddVisitWizard({ onBack, onComplete }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ doctor: null, date: null, time: null });
 
+  const MOCK_DATES = ['14 maja', '15 maja', '16 maja', '17 maja', '18 maja'];
+  const MOCK_TIMES = ['09:00', '10:30', '12:15', '14:00', '15:30'];
+  const [activeDate, setActiveDate] = useState(MOCK_DATES[0]);
+
   const handleSelectDoctor = (doc) => {
     setFormData({ ...formData, doctor: doc });
     setStep(2);
+  };
+
+  const handleSelectTime = (time) => {
+    setFormData({ ...formData, date: activeDate, time: time });
+    setStep(3);
   };
 
   return (
@@ -717,7 +726,46 @@ export function AddVisitWizard({ onBack, onComplete }) {
           ))}
         </div>
       )}
-      {step > 1 && (
+      {step === 2 && (
+        <div style={{ animation: 'fadeUp 0.3s ease' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <div>
+              <div style={{ fontSize: 13, color: 'rgba(58,42,63,0.6)' }}>Wybrany specjalista</div>
+              <div style={{ fontWeight: 700, color: PT.plum }}>{formData.doctor?.name}</div>
+            </div>
+            <button onClick={() => setStep(1)} style={{ background: 'transparent', border: '1px solid rgba(58,42,63,0.1)', borderRadius: 16, padding: '4px 12px', fontSize: 12, color: PT.plum, cursor: 'pointer' }}>Zmień</button>
+          </div>
+
+          <SectionLabel>Wybierz dzień</SectionLabel>
+          <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 12, margin: '0 -24px', padding: '0 24px 12px 24px', WebkitOverflowScrolling: 'touch' }}>
+            {MOCK_DATES.map(d => (
+              <button key={d} onClick={() => setActiveDate(d)} style={{
+                flexShrink: 0, padding: '12px 20px', borderRadius: 16, border: 'none',
+                background: activeDate === d ? PT.plum : 'rgba(255,255,255,0.5)',
+                color: activeDate === d ? PT.cream : PT.plum,
+                fontWeight: 600, cursor: 'pointer',
+                boxShadow: activeDate === d ? '0 4px 12px rgba(58,42,63,0.2)' : 'none'
+              }}>
+                {d}
+              </button>
+            ))}
+          </div>
+
+          <SectionLabel style={{ marginTop: 12 }}>Wybierz godzinę</SectionLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {MOCK_TIMES.map(t => (
+              <button key={t} onClick={() => handleSelectTime(t)} style={{
+                background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(58,42,63,0.05)',
+                padding: 16, borderRadius: 16, color: PT.plum, fontWeight: 700,
+                cursor: 'pointer', backdropFilter: 'blur(10px)'
+              }}>
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {step === 3 && (
         <div style={{ padding: '20px 0' }}>Step: {step}</div>
       )}
     </Wrap>
