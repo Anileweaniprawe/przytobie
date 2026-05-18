@@ -624,6 +624,12 @@ const VISITS = [
 ];
 
 export function BookVisit({ onBack }) {
+  const [showWizard, setShowWizard] = useState(false);
+
+  if (showWizard) {
+    return <AddVisitWizard onBack={() => setShowWizard(false)} onComplete={() => setShowWizard(false)} />;
+  }
+
   return (
     <Wrap title="Wizyty" onBack={onBack}>
       <SectionLabel>Nadchodzące</SectionLabel>
@@ -665,7 +671,9 @@ export function BookVisit({ onBack }) {
         ))}
       </div>
 
-      <button style={{
+      <button 
+        onClick={() => setShowWizard(true)}
+        style={{
         width: '100%', marginTop: 20,
         appearance: 'none', border: 0,
         background: PT.plum, color: PT.cream,
