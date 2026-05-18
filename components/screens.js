@@ -683,15 +683,43 @@ export function BookVisit({ onBack }) {
 }
 
 // ─── 6. AddVisitWizard ────────────────────────────────────────
+const WIZARD_DOCTORS = [
+  { id: 'd1', name: 'dr M. Kowalska', spec: 'Onkolog', place: 'Centrum Onkologii', color: PT.lilac },
+  { id: 'd2', name: 'dr A. Wiśniewska', spec: 'Chirurg', place: 'Poliklinika BCU', color: PT.blush }
+];
+
 export function AddVisitWizard({ onBack, onComplete }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ doctor: null, date: null, time: null });
 
+  const handleSelectDoctor = (doc) => {
+    setFormData({ ...formData, doctor: doc });
+    setStep(2);
+  };
+
   return (
-    <Wrap title="Dodaj wizytę" onBack={onBack}>
-      <div style={{ padding: '20px 0' }}>
-        Step: {step}
-      </div>
+    <Wrap title="Dodaj wizytę" onBack={step === 1 ? onBack : () => setStep(step - 1)}>
+      {step === 1 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <SectionLabel>Wybierz specjalistę</SectionLabel>
+          {WIZARD_DOCTORS.map(doc => (
+            <Card key={doc.id} style={{ cursor: 'pointer' }} onClick={() => handleSelectDoctor(doc)}>
+              <div style={{ display: 'flex', padding: 16, alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: doc.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="users" size={20} color={PT.plum} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, color: PT.plum }}>{doc.name}</div>
+                  <div style={{ fontSize: 13, color: 'rgba(58,42,63,0.6)' }}>{doc.spec} • {doc.place}</div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+      {step > 1 && (
+        <div style={{ padding: '20px 0' }}>Step: {step}</div>
+      )}
     </Wrap>
   );
 }
