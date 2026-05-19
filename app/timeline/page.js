@@ -65,14 +65,27 @@ const STAGES = [
     textDone: 'Plan leczenia został ustalony i pierwsze kroki są już za Tobą.',
     textActive: 'Twój zespół BCU przygotowuje plan leczenia. Konsylium wielodyscyplinarne ustali, czy zaczniecie od operacji, czy od leczenia systemowego.',
     textUpcoming: 'Na podstawie pełnej diagnostyki, zespół lekarzy różnych specjalizacji zaplanuje optymalną dla Ciebie ścieżkę.',
+    questions: [
+      'Jak długo będę czekać na decyzję konsylium?',
+      'Kto wchodzi w skład konsylium?',
+      'Kiedy otrzymam dokładny plan leczenia?',
+      'Czy muszę wykonać dodatkowe badania?',
+    ],
   },
   {
     id: 4, icon: 'pill',
     label: 'Leczenie aktywne',
     subtitle: 'Chirurgia · Systemowe · Radioterapia',
+    special: true,
     textDone: 'Główne leczenie onkologiczne zostało zakończone. To wielki sukces na Twojej ścieżce.',
     textActive: 'To etap realizacji planu leczenia. Może on obejmować operację, chemioterapię, radioterapię lub hormonoterapię w kolejności dopasowanej do Ciebie.',
     textUpcoming: 'Zależnie od typu nowotworu i stopnia zaawansowania, przejdziesz przez zaplanowane etapy leczenia celowanego.',
+    questions: [
+      'Co dokładnie obejmuje operacja?',
+      'Jakie są dostępne metody chirurgiczne?',
+      'Jak długo potrwa hospitalizacja?',
+      'Co muszę przygotować przed zabiegiem?',
+    ],
   },
   {
     id: 5, icon: 'leaf',
@@ -83,13 +96,6 @@ const STAGES = [
     textUpcoming: 'Po zakończeniu aktywnego leczenia przejdziesz pod stałą opiekę poradni, by monitorować stan zdrowia i wspierać regenerację.',
     },
     ];
-
-const QUESTIONS = [
-  'Co dokładnie obejmuje operacja?',
-  'Jakie są dostępne metody chirurgiczne?',
-  'Jak długo potrwa hospitalizacja?',
-  'Co muszę przygotować przed zabiegiem?',
-];
 
 // ─── Single stage row ─────────────────────────────────────────
 function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsOpen, setQuestionsOpen }) {
@@ -263,12 +269,12 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
                     </div>
                   </button>
 
-                  {questionsOpen && (
+                  {questionsOpen && stage.questions && (
                     <div style={{ borderTop: '1px solid rgba(58,42,63,0.07)' }}>
-                      {QUESTIONS.map((q, i) => (
+                      {stage.questions.map((q, i) => (
                         <div key={i} style={{
                           padding: '11px 14px',
-                          borderBottom: i < QUESTIONS.length - 1 ? '1px solid rgba(58,42,63,0.06)' : 'none',
+                          borderBottom: i < stage.questions.length - 1 ? '1px solid rgba(58,42,63,0.06)' : 'none',
                           fontFamily: 'var(--font-manrope), system-ui',
                           fontSize: 13, lineHeight: 1.5,
                           color: PT.plumSoft,
