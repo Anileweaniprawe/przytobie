@@ -35,7 +35,7 @@ const STAGES = [
   },
   {
     id: 'diagnoza',
-    label: 'Przygotowuję się do operacji',
+    label: 'Mam diagnozę, czekam na plan',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
         <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"
@@ -46,7 +46,7 @@ const STAGES = [
   },
   {
     id: 'leczenie',
-    label: 'Jestem w trakcie leczenia okołooperacyjnego',
+    label: 'Jestem w trakcie aktywnego leczenia',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
         <path d="M12 21C7 17 3 13.5 3 9a5 5 0 019-3 5 5 0 019 3c0 4.5-4 8-9 12z"

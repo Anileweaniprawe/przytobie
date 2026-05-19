@@ -26,32 +26,22 @@ function KnowledgeCard({ subtype }) {
     lum_a: {
       title: 'Podtyp Luminalny A',
       desc: 'To najczęstszy podtyp raka piersi. Cechuje się powolnym wzrostem i bardzo dobrą odpowiedzią na leczenie hormonalne.',
-      focus: 'Kluczowe: Hormonoterapia (HTH)',
-      fact: 'Chemioterapia tylko w wyjątkowych sytuacjach.'
     },
     lum_b_neg: {
       title: 'Podtyp Luminalny B (HER2-)',
       desc: 'Podtyp o dodatnim statusie receptorów hormonalnych, ale wyższym stopniu zróżnicowania niż Luminalny A.',
-      focus: 'Leczenie: HTH ± Chemioterapia',
-      fact: 'Decyzja o chemii zależy od poziomu Ki67.'
     },
     lum_b_pos: {
       title: 'Podtyp Luminalny B (HER2+)',
       desc: 'Podtyp wykazujący cechy hormonalne oraz nadrzeźnię receptora HER2.',
-      focus: 'Leczenie: Chemo + Trastuzumab + HTH',
-      fact: 'Bardzo dobra odpowiedź na leczenie celowane.'
     },
     her2_pos: {
       title: 'Podtyp Nieluminalny HER2+',
       desc: 'Głównym motorem wzrostu jest receptor HER2. Nowoczesne leki celowane zrewolucjonizowały wyniki leczenia tego podtypu.',
-      focus: 'Leczenie: Chemo + Trastuzumab',
-      fact: 'Leki celowane uderzają prosto w "silnik" raka.'
     },
     tnbc: {
       title: 'Podtyp Potrójnie ujemny',
       desc: 'Brak receptorów hormonalnych i HER2. Najszybciej reaguje na chemioterapię i nowoczesną immunoterapię.',
-      focus: 'Leczenie: Chemo ± Immunoterapia',
-      fact: 'Intensywne leczenie na starcie daje najlepsze efekty.'
     }
   };
 
@@ -99,21 +89,6 @@ function KnowledgeCard({ subtype }) {
       }}>
         {info.desc}
       </p>
-
-      <div style={{
-        background: `${currentSubtype.color}10`,
-        borderRadius: 12, padding: '10px 14px',
-        display: 'flex', flexDirection: 'column', gap: 4
-      }}>
-        <div style={{
-          fontFamily: 'var(--font-manrope), system-ui',
-          fontSize: 13, fontWeight: 700, color: PT.plum
-        }}>{info.focus}</div>
-        <div style={{
-          fontFamily: 'var(--font-manrope), system-ui',
-          fontSize: 12, color: 'rgba(58,42,63,0.5)'
-        }}>{info.fact}</div>
-      </div>
     </div>
   );
 }
@@ -178,8 +153,8 @@ const STAGE_DATA = {
     heroCTA: 'Ustaw przypomnienie',
     hasDateInput: true,
     grid: [
-      { label: 'Co oznacza biopsja',        icon: 'microscope' },
-      { label: 'Pytania do lekarza',         icon: 'chat'       },
+      { label: 'Zapytaj asystentkę',         icon: 'chat'       },
+      { label: 'Moje wyniki',                icon: 'document'   },
       { label: 'Wsparcie psychologiczne',    icon: 'heart'      },
       { label: 'Moje dokumenty',             icon: 'folder'     },
     ],
@@ -1148,16 +1123,21 @@ function DashboardContent() {
   const [screen, setScreen] = useState('dashboard');
   const [checklistType, setChecklistType] = useState('badanie');
   const [chatTopic, setChatTopic] = useState(null);
+  const [chatChips, setChatChips] = useState(null);
   const data = STAGE_DATA[stage];
 
-  const back = () => { setScreen('dashboard'); setChatTopic(null); };
+  const back = () => { setScreen('dashboard'); setChatTopic(null); setChatChips(null); };
 
   function handleTileClick(item) {
     const label = item.label;
     const nav = {
       'Gdzie się zbadać':        () => setScreen('find-clinic'),
       'Co zabrać na badanie':    () => { setChecklistType('badanie');   setScreen('checklist'); },
-      'Zapytaj asystentkę':      () => { setChatTopic(null); setScreen('chat'); },
+      'Zapytaj asystentkę':      () => { 
+          setChatTopic(null); 
+          setChatChips(stage === 2 ? ['Co oznacza biopsja?', 'Mam pytanie o konsylium wielodyscyplinarne'] : null);
+          setScreen('chat'); 
+      },
       'Twoje badania':           () => setScreen('documents'),
       'Co oznacza biopsja':      () => { setChatTopic('Co oznacza biopsja?'); setScreen('chat'); },
       'Pytania do lekarza':      () => { setChatTopic(null); setScreen('chat'); },
@@ -1178,7 +1158,7 @@ function DashboardContent() {
 
   if (screen === 'find-clinic')    return <FindClinic onBack={back}/>;
   if (screen === 'checklist')      return <Checklist type={checklistType} onBack={back}/>;
-  if (screen === 'chat')           return <ChatScreen onBack={back} initialMessage={chatTopic}/>;
+  if (screen === 'chat')           return <ChatScreen onBack={back} initialMessage={chatTopic} suggestedChips={chatChips}/>;
   if (screen === 'documents')      return <DocumentsScreen onBack={back}/>;
   if (screen === 'book-visit')     return <BookVisit onBack={back}/>;
   if (screen === 'report-symptom') return <ReportSymptom onBack={back}/>;

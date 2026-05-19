@@ -402,10 +402,7 @@ export function Checklist({ type, onBack }) {
 }
 
 // ─── 3. ChatScreen ────────────────────────────────────────────
-const CHAT_REPLIES = [
-  { from: 'u', text: 'Mam pytanie o konsylium wielodyscyplinarne' },
-  { from: 'a', text: 'Oczywiście. Konsylium to spotkanie specjalistów — onkologa, chirurga, radiologa i patologa — którzy wspólnie ustalają najlepszy plan leczenia. Zazwyczaj trwa 30–60 minut i możesz zadawać pytania oraz wyrażać swoje oczekiwania.' },
-];
+const CHAT_REPLIES = [];
 
 const CHIPS = ['Jak się przygotować?', 'Co zabrać?', 'Kiedy dostanę wyniki?'];
 
@@ -413,12 +410,15 @@ const CHIP_REPLIES = {
   'Jak się przygotować?': 'Wyśpij się dzień wcześniej, zjedz lekki posiłek i przygotuj listę pytań. Możesz zabrać bliską osobę — pomoże zapamiętać informacje.',
   'Co zabrać?':           'Zabierz wyniki biopsji i badań obrazowych, skierowanie, dowód osobisty oraz listę przyjmowanych leków.',
   'Kiedy dostanę wyniki?': 'Zazwyczaj koordynatorka BCU kontaktuje się w ciągu 2–3 dni roboczych po konsylium z ustalonym planem leczenia.',
+  'Co oznacza biopsja?':  'Biopsja to badanie polegające na pobraniu niewielkiego fragmentu tkanki do oceny pod mikroskopem. Jest to najważniejszy krok, ponieważ pozwala dokładnie sprawdzić rodzaj zmiany i dobrać dla Ciebie najlepsze, spersonalizowane leczenie.',
+  'Co to jest konsylium?': 'Konsylium to spotkanie specjalistów — onkologa, chirurga, radiologa i patologa — którzy wspólnie ustalają najlepszy plan leczenia. Zazwyczaj trwa 30–60 minut i możesz zadawać pytania oraz wyrażać swoje oczekiwania.',
+  'Mam pytanie o konsylium wielodyscyplinarne': 'Oczywiście. Konsylium to spotkanie specjalistów — onkologa, chirurga, radiologa i patologa — którzy wspólnie ustalają najlepszy plan leczenia. Zazwyczaj trwa 30–60 minut i możesz zadawać pytania oraz wyrażać swoje oczekiwania.',
 };
 
-export function ChatScreen({ onBack, initialMessage }) {
+export function ChatScreen({ onBack, initialMessage, suggestedChips }) {
   const [messages, setMessages] = useState(() => {
     const name = typeof window !== 'undefined' ? (localStorage.getItem('userName') || 'Agnieszko') : 'Agnieszko';
-    
+
     // We start with a base greeting
     const baseMsgs = [
       { from: 'a', text: `Cześć ${name}, jestem Twoją asystentką BCU. W czym mogę Ci dziś pomóc?` },
@@ -428,7 +428,7 @@ export function ChatScreen({ onBack, initialMessage }) {
     if (initialMessage) {
       baseMsgs.push({ from: 'u', text: initialMessage });
       // Provide a standard response for this topic
-      baseMsgs.push({ from: 'a', text: CHIP_REPLIES[initialMessage] ?? 'Konsylium to spotkanie specjalistów — onkologa, chirurga, radiologa i patologa — którzy wspólnie ustalają najlepszy plan leczenia. Zazwyczaj trwa 30–60 minut i możesz zadawać pytania oraz wyrażać swoje oczekiwania.' });
+      baseMsgs.push({ from: 'a', text: CHIP_REPLIES[initialMessage] ?? 'Dziękuję za pytanie. Koordynatorka BCU skontaktuje się z Tobą wkrótce.' });
     } else {
       // If no initialMessage, just load the default chat history mockup
       baseMsgs.push(...CHAT_REPLIES);
@@ -438,6 +438,7 @@ export function ChatScreen({ onBack, initialMessage }) {
   });
   const [input, setInput] = useState('');
   const [chipsUsed, setChipsUsed] = useState(!!initialMessage);
+  const [currentChips, setCurrentChips] = useState(suggestedChips || CHIPS);
 
   function send(text) {
     if (!text.trim()) return;
@@ -446,7 +447,13 @@ export function ChatScreen({ onBack, initialMessage }) {
       { from: 'u', text },
       { from: 'a', text: CHIP_REPLIES[text] ?? 'Dziękuję za pytanie. Koordynatorka BCU skontaktuje się z Tobą wkrótce.' },
     ]);
-    setChipsUsed(true);
+    
+    if (text === 'Mam pytanie o konsylium wielodyscyplinarne') {
+      setCurrentChips(['Jak się przygotować?', 'Co zabrać?', 'Kiedy dostanę wyniki?']);
+      setChipsUsed(false);
+    } else {
+      setChipsUsed(true);
+    }
     setInput('');
   }
 
@@ -483,7 +490,7 @@ export function ChatScreen({ onBack, initialMessage }) {
 
         {!chipsUsed && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
-            {CHIPS.map(chip => (
+            {currentChips.map(chip => (
               <button key={chip} onClick={() => send(chip)} style={{
                 appearance: 'none',
                 border: '1.5px solid rgba(58,42,63,0.14)',

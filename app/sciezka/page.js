@@ -21,10 +21,10 @@ export default function SciezkaPage() {
       // Default steps if no subtype selected
       setSteps([
         { t: 'Pierwsze badanie',   d: 'Zrozum, co Cię czeka.',            done: true },
-        { t: 'Diagnostyka',        d: 'Wyniki, pytania, kontekst.',        done: true },
-        { t: 'Decyzja o leczeniu', d: 'Plan przygotowany razem z Tobą.',   active: true },
-        { t: 'Operacja',           d: 'Krok po kroku — bez niespodzianek.' },
-        { t: 'Leczenie',           d: 'Wsparcie w trudnych dniach.' },
+        { t: 'Diagnostyka',        d: 'Wyniki, badania obrazowe i profile.', done: true },
+        { t: 'Konsylium',          d: 'Wielodyscyplinarny zespół ustali plan.', active: true },
+        { t: 'Leczenie',           d: 'Indywidualna ścieżka terapeutyczna.' },
+        { t: 'Wsparcie',           d: 'Opieka w trakcie i po leczeniu.' },
         { t: 'Rehabilitacja',      d: 'Powrót do siebie, w swoim tempie.' },
       ]);
     }
