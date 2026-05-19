@@ -81,16 +81,8 @@ const STAGES = [
     textDone: 'Jesteś pod stałą opieką i regularnie się badasz. To daje spokój i poczucie bezpieczeństwa.',
     textActive: 'Skupiamy się na powrocie do sprawności. Regularne kontrole i rehabilitacja to teraz Twoi sprzymierzeńcy.',
     textUpcoming: 'Po zakończeniu aktywnego leczenia przejdziesz pod stałą opiekę poradni, by monitorować stan zdrowia i wspierać regenerację.',
-  },
-  {
-    id: 6, icon: 'sun',
-    label: 'Powrót do życia',
-    subtitle: 'Rekonstrukcja · Wsparcie długoterminowe',
-    textDone: 'Wróciłaś do swoich aktywności z nową siłą. Pamiętaj, że zawsze możesz liczyć na wsparcie społeczności.',
-    textActive: 'To czas na odzyskiwanie pełni sił i planowanie przyszłości. Możesz też rozważyć zabiegi rekonstrukcyjne.',
-    textUpcoming: 'Z czasem choroba stanie się tylko wspomnieniem, a Ty wrócisz do pełnej aktywności życiowej i zawodowej.',
-  },
-];
+    },
+    ];
 
 const QUESTIONS = [
   'Co dokładnie obejmuje operacja?',
@@ -327,7 +319,7 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
 // ─── Page content ─────────────────────────────────────────────
 function TimelineContent() {
   const searchParams   = useSearchParams();
-  const urlStage       = Math.min(6, Math.max(1, parseInt(searchParams.get('stage') ?? '3', 10)));
+  const urlStage       = Math.min(5, Math.max(1, parseInt(searchParams.get('stage') ?? '3', 10)));
   const dashParam      = searchParams.get('dash');
   const dashStage      = Math.min(5, Math.max(1,
     parseInt(dashParam) ||

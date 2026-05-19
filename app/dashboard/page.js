@@ -154,7 +154,6 @@ const STAGE_META = [
   { id: 3, label: 'Leczenie operacyjne' },
   { id: 4, label: 'Leczenie okołooperacyjne' },
   { id: 5, label: 'Rehabilitacja' },
-  { id: 6, label: 'Powrót do życia' },
 ];
 
 const STAGE_DATA = {
@@ -224,19 +223,6 @@ const STAGE_DATA = {
       { label: 'Zadbaj o siebie',    icon: 'sparkle'  },
     ],
     hasPostTreatment: true,
-  },
-  6: {
-    heroGradient: 'linear-gradient(145deg, #FFF9F0 0%, #FFE8CC 100%)',
-    heroDotColor: '#FF9500',
-    heroTitle: 'Witaj w nowym rozdziale. Twoja siła jest inspiracją.',
-    heroSubtitle: 'Pamiętaj o regularnej samokontroli i badaniach.',
-    heroCTA: 'Moja społeczność',
-    grid: [
-      { label: 'Grupy wsparcia',     icon: 'users'    },
-      { label: 'Zadbaj o siebie',    icon: 'sparkle'  },
-      { label: 'Zapytaj asystentkę', icon: 'chat'     },
-      { label: 'Moje dokumenty',     icon: 'folder'   },
-    ],
   },
 };
 
