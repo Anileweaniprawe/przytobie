@@ -174,8 +174,8 @@ const STAGE_DATA = {
   4: {
     heroGradient: 'linear-gradient(145deg, #F0F4EE 0%, #D4E8D0 100%)',
     heroDotColor: '#5A9E6A',
-    heroTitle: 'Jutro: Chemioterapia, cykl 3/6',
-    heroSubtitle: '09:00 · Salve Medica, ul. Inflancka 3',
+    heroTitle: 'Twoja najbliższa wizyta',
+    heroSubtitle: 'Jutro, godz. 09:00 · Salve Medica',
     heroCTA: 'Szczegóły wizyty',
     grid: [
       { label: 'Zgłoś objaw',   icon: 'alert'    },

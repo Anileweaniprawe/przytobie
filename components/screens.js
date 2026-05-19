@@ -620,7 +620,7 @@ const VISITS = [
     date:    'śr. 14 maja 2025',
     time:    '10:30',
     doctor:  'dr M. Kowalska',
-    place:   'Centrum Onkologii, Warszawa',
+    place:   'Centrum Onkologii, Łódź',
     accent:  PT.lilac,
   },
   {
@@ -1323,7 +1323,7 @@ const PARTNERS = [
     id: 1,
     name: 'Studio Tatuażu Medycznego — Aneta Kowalska',
     category: 'Tatuaż medyczny',
-    location: 'Warszawa, Mokotów',
+    location: 'Łódź, Mokotów',
     description: 'Specjalizacja: rekonstrukcja areoli po mastektomii. Doświadczenie 8 lat, współpraca z oddziałami onkologicznymi.',
     badge: 'Polecane przez BCU',
     badgeColor: '#4AAAC6',
@@ -1347,7 +1347,7 @@ const PARTNERS = [
     id: 3,
     name: 'Peruki Onkologiczne — Dom Mody Sylwia',
     category: 'Peruki',
-    location: 'Warszawa, Wola',
+    location: 'Łódź, Wola',
     description: 'Peruki naturalne i syntetyczne dla kobiet w trakcie i po chemioterapii. Możliwość dofinansowania z NFZ.',
     badge: 'Dofinansowanie NFZ',
     badgeColor: '#6B9E9E',
@@ -1384,7 +1384,7 @@ const PARTNERS = [
     id: 6,
     name: 'OnkoCafe — Klub Pacjenta',
     category: 'Wsparcie psychologiczne',
-    location: 'Warszawa + online',
+    location: 'Łódź + online',
     description: 'Grupy wsparcia, warsztaty, psycholog, dietetyk. Spotkania stacjonarne i online dla pacjentek w każdym etapie.',
     badge: 'Bezpłatne',
     badgeColor: '#A8C5A0',
@@ -1397,7 +1397,7 @@ const PARTNERS = [
     id: 7,
     name: 'Fizjoterapia Onkologiczna — Centrum Zdrowia',
     category: 'Rehabilitacja',
-    location: 'Warszawa, Ursynów',
+    location: 'Łódź, Ursynów',
     description: 'Fizjoterapia po mastektomii, drenaż limfatyczny, ćwiczenia ramienia. NFZ i prywatnie.',
     badge: 'NFZ + prywatnie',
     badgeColor: '#6B9E9E',
@@ -1734,8 +1734,6 @@ const APPT_ITEMS = [
   'Dowód osobisty',
   'Karta PESEL / ubezpieczenia',
   'Wyniki ostatnich badań krwi',
-  'Wygodne ubranie z krótkim rękawem',
-  'Coś do jedzenia i picia',
   'Ktoś bliski (jeśli możliwe)',
 ];
 
@@ -1773,12 +1771,12 @@ export function AppointmentDetail({ onBack, onOpenChat }) {
               fontWeight: 700, fontSize: 16,
               color: PT.plum, letterSpacing: '-0.01em',
               marginBottom: 10,
-            }}>Chemioterapia — cykl 3/6</div>
+            }}>Wizyta lekarska</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {[
                 { icon: 'calendar', text: 'Jutro, 13 maja 2026 · 09:00' },
-                { icon: 'users',    text: 'dr Anna Wiśniewska — Onkolog' },
-                { icon: 'mapPin',   text: 'Salve Medica, ul. Inflancka 3, Warszawa' },
+                { icon: 'users',    text: 'dr Anna Wiśniewska' },
+                { icon: 'mapPin',   text: 'Salve Medica, ul. Inflancka 3, Łódź' },
               ].map((row, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                   <Icon name={row.icon} size={13} color="rgba(58,42,63,0.4)" sw={1.6}/>
