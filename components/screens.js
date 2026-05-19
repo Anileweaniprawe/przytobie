@@ -1,7 +1,8 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { PT } from '@/lib/theme';
+import { KNOWLEDGE_BASE, getAllTags } from '@/lib/knowledge-base';
 
 const DynamicMap = dynamic(() => import('./Map'), { ssr: false });
 
@@ -1058,92 +1059,6 @@ export function ReportSymptom({ onBack }) {
   );
 }
 
-// ─── 7. MyResults ─────────────────────────────────────────────
-const RESULTS = [
-  {
-    name:   'Morfologia krwi',
-    date:   '10 kwi 2025',
-    status: 'Nowy',
-    detail: 'Hemoglobina 11.2 g/dl (norma: 12–16). Leukocyty 3.8 tys/µl (norma: 4–10). Płytki krwi 187 tys/µl. Wynik do omówienia z lekarzem.',
-  },
-  {
-    name:   'TK klatki piersiowej',
-    date:   '28 mar 2025',
-    status: 'Przeczytany',
-    detail: 'Brak cech rozsiewu w obrębie klatki piersiowej i jamy brzusznej. Węzły chłonne pachowe do 8 mm po stronie lewej.',
-  },
-  {
-    name:   'Wynik biopsji gruboigłowej',
-    date:   '15 mar 2025',
-    status: 'Przeczytany',
-    detail: 'Inwazyjny rak piersi — typ przewodowy NST. Stopień złośliwości G2. ER+, PR+, HER2−. Ki-67: 18%.',
-  },
-];
-
-export function MyResults({ onBack }) {
-  const [expanded, setExpanded] = useState(null);
-
-  return (
-    <Wrap title="Moje wyniki" onBack={onBack}>
-      <SectionLabel>Wyniki badań</SectionLabel>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {RESULTS.map((r, i) => (
-          <Card key={i}>
-            <button
-              onClick={() => setExpanded(e => e === i ? null : i)}
-              style={{
-                width: '100%', appearance: 'none', border: 0,
-                background: 'transparent', cursor: 'pointer',
-                padding: '15px 16px',
-                display: 'flex', alignItems: 'center', gap: 12,
-                textAlign: 'left',
-              }}
-            >
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{
-                  fontFamily: 'var(--font-manrope), system-ui',
-                  fontWeight: 600, fontSize: 14, color: PT.plum,
-                  marginBottom: 3,
-                }}>{r.name}</div>
-                <div style={{
-                  fontFamily: 'var(--font-manrope), system-ui',
-                  fontSize: 12, color: 'rgba(58,42,63,0.45)',
-                }}>{r.date}</div>
-              </div>
-              <span style={{
-                flexShrink: 0,
-                fontFamily: 'var(--font-manrope), system-ui',
-                fontSize: 11, fontWeight: 700,
-                background: r.status === 'Nowy' ? `${PT.salmon}30` : 'rgba(58,42,63,0.06)',
-                color: r.status === 'Nowy' ? PT.salmonDeep : 'rgba(58,42,63,0.4)',
-                borderRadius: 999, padding: '3px 10px',
-              }}>{r.status}</span>
-              <div style={{
-                transform: expanded === i ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.2s', flexShrink: 0,
-              }}>
-                <Icon name="chevron" size={15} color="rgba(58,42,63,0.35)"/>
-              </div>
-            </button>
-            {expanded === i && (
-              <div style={{
-                padding: '0 16px 16px',
-                borderTop: '1px solid rgba(58,42,63,0.06)',
-              }}>
-                <p style={{
-                  fontFamily: 'var(--font-manrope), system-ui',
-                  fontSize: 13, lineHeight: 1.6,
-                  color: PT.plumSoft, marginTop: 12,
-                }}>{r.detail}</p>
-              </div>
-            )}
-          </Card>
-        ))}
-      </div>
-    </Wrap>
-  );
-}
-
 // ─── 8. SupportScreen ─────────────────────────────────────────
 const SUPPORT_CARDS = [
   {
@@ -1888,6 +1803,197 @@ export function AppointmentDetail({ onBack, onOpenChat }) {
           <Icon name="chat" size={15} color={PT.plumSoft}/>
           Zapytaj asystentkę
         </button>
+      </div>
+    </Wrap>
+  );
+}
+
+// ─── 12. KnowledgeBase ───────────────────────────────────────
+export function KnowledgeBase({ onBack }) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTag, setActiveTag] = useState(null);
+  const [expanded, setExpanded] = useState(null);
+
+  const allTags = useMemo(() => getAllTags(), []);
+
+  const filteredItems = useMemo(() => {
+    return KNOWLEDGE_BASE.filter(item => {
+      const matchesSearch = 
+        item.term.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        item.definition.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesTag = activeTag ? item.tags.includes(activeTag) : true;
+
+      return matchesSearch && matchesTag;
+    });
+  }, [searchQuery, activeTag]);
+
+  return (
+    <Wrap title="Baza wiedzy" onBack={onBack}>
+      <p style={{
+        fontFamily: 'var(--font-newsreader), Georgia, serif',
+        fontStyle: 'italic',
+        fontSize: 18, lineHeight: 1.4,
+        color: PT.plumSoft, marginBottom: 16,
+      }}>
+        Słownik pojęć onkologicznych
+      </p>
+
+      {/* Search Input */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          background: 'rgba(255,255,255,0.8)',
+          backdropFilter: 'blur(12px)',
+          borderRadius: 20, padding: '0 16px',
+          border: '1.5px solid rgba(58,42,63,0.1)',
+          boxShadow: 'inset 0 2px 4px rgba(58,42,63,0.02)',
+          height: 44,
+        }}>
+          <Icon name="search" size={16} color={PT.plumSoft} />
+          <input
+            type="text"
+            placeholder="Szukaj terminu..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              flex: 1, border: 'none', background: 'transparent',
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontSize: 15, color: PT.plum, outline: 'none',
+              padding: 0,
+            }}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{
+                appearance: 'none', border: 0, background: 'none', padding: 0,
+                cursor: 'pointer', display: 'flex', alignItems: 'center',
+                color: PT.plumSoft,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={PT.plumSoft} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Tags Scrollable Row */}
+      <div style={{
+        display: 'flex', gap: 8, overflowX: 'auto',
+        paddingBottom: 16, margin: '0 -20px 8px', paddingLeft: 20, paddingRight: 20,
+        scrollbarWidth: 'none',
+      }}>
+        <style>{`.pt-tags::-webkit-scrollbar { display: none; }`}</style>
+        <div className="pt-tags" style={{ display: 'flex', gap: 8, overflowX: 'auto', width: '100%' }}>
+          {allTags.map(tag => (
+            <button
+              key={tag}
+              onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+              style={{
+                flexShrink: 0, height: 32, borderRadius: 16,
+                padding: '0 12px', appearance: 'none', cursor: 'pointer',
+                fontFamily: 'var(--font-manrope), system-ui',
+                fontSize: 12, fontWeight: 600,
+                background: activeTag === tag ? PT.plum : 'rgba(255,255,255,0.6)',
+                color: activeTag === tag ? '#fff' : PT.plum,
+                border: activeTag === tag ? 'none' : '1px solid rgba(58,42,63,0.1)',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              #{tag}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <SectionLabel>Terminy ({filteredItems.length})</SectionLabel>
+
+      {/* Results List */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 32 }}>
+        {filteredItems.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '32px 20px', color: PT.plumSoft }}>
+            <p style={{
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontSize: 14, marginBottom: 16
+            }}>Nie znaleziono haseł.</p>
+            <button
+              onClick={() => onBack()} // In a real scenario, this might need to open chat directly, 
+              // but per handled navigation in dashboard, returning to dashboard is the simplest way 
+              // to let user pick chat. Alternatively, we could pass a setScreen prop.
+              // For now, let's just make it look like a CTA.
+              style={{
+                appearance: 'none', border: 0,
+                background: PT.paper, color: PT.plum,
+                padding: '10px 20px', borderRadius: 20,
+                fontFamily: 'var(--font-manrope), system-ui',
+                fontSize: 13, fontWeight: 600,
+                boxShadow: '0 2px 8px rgba(58,42,63,0.05)',
+                cursor: 'pointer'
+              }}
+            >
+              Zapytaj asystentkę
+            </button>
+          </div>
+        ) : (
+          filteredItems.map((item, i) => (
+            <Card key={i} style={{ padding: 0, overflow: 'hidden' }}>
+              <button
+                onClick={() => setExpanded(e => e === i ? null : i)}
+                style={{
+                  width: '100%', appearance: 'none', border: 0,
+                  background: 'transparent', cursor: 'pointer',
+                  padding: '16px', display: 'flex', alignItems: 'center',
+                  justifyContent: 'space-between', textAlign: 'left',
+                }}
+              >
+                <div style={{
+                  fontFamily: 'var(--font-manrope), system-ui',
+                  fontWeight: 600, fontSize: 15, color: PT.plum,
+                  paddingRight: 16,
+                }}>{item.term}</div>
+                <div style={{
+                  transform: expanded === i ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.3s ease', flexShrink: 0,
+                  width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: expanded === i ? `${PT.salmon}20` : 'rgba(58,42,63,0.04)',
+                  borderRadius: 12,
+                }}>
+                  <Icon name="chevron" size={14} color={expanded === i ? PT.salmonDeep : PT.plumSoft}/>
+                </div>
+              </button>
+              
+              {expanded === i && (
+                <div style={{
+                  padding: '0 16px 16px',
+                  borderTop: '1px solid rgba(58,42,63,0.06)',
+                  animation: 'fadeUp 0.3s ease-out'
+                }}>
+                  <p style={{
+                    fontFamily: 'var(--font-manrope), system-ui',
+                    fontSize: 14, lineHeight: 1.6,
+                    color: 'rgba(58,42,63,0.7)', marginTop: 12, marginBottom: 12,
+                  }}>{item.definition}</p>
+                  
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {item.tags.map(tag => (
+                      <span key={tag} style={{
+                        fontFamily: 'var(--font-manrope), system-ui',
+                        fontSize: 11, fontWeight: 500,
+                        color: PT.plumSoft,
+                        background: 'rgba(58,42,63,0.04)',
+                        padding: '3px 8px', borderRadius: 8,
+                      }}>#{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Card>
+          ))
+        )}
       </div>
     </Wrap>
   );

@@ -14,8 +14,8 @@ import { PT } from '@/lib/theme';
 import { SUBTYPES, getStepsForSubtype } from '@/lib/treatment';
 import {
   FindClinic, Checklist, ChatScreen, DocumentsScreen,
-  BookVisit, ReportSymptom, MyResults, SupportScreen, RehabPlan, PartnersScreen,
-  AppointmentDetail,
+  BookVisit, ReportSymptom, SupportScreen, RehabPlan, PartnersScreen,
+  AppointmentDetail, KnowledgeBase,
 } from '@/components/screens';
 
 function KnowledgeCard({ subtype }) {
@@ -154,7 +154,7 @@ const STAGE_DATA = {
     hasDateInput: true,
     grid: [
       { label: 'Zapytaj asystentkę',         icon: 'chat'       },
-      { label: 'Moje wyniki',                icon: 'document'   },
+      { label: 'Baza wiedzy',                icon: 'document'   },
       { label: 'Wsparcie psychologiczne',    icon: 'heart'      },
       { label: 'Moje dokumenty',             icon: 'folder'     },
     ],
@@ -179,7 +179,7 @@ const STAGE_DATA = {
     heroCTA: 'Szczegóły wizyty',
     grid: [
       { label: 'Zgłoś objaw',   icon: 'alert'    },
-      { label: 'Moje wyniki',   icon: 'chart'    },
+      { label: 'Baza wiedzy',   icon: 'document' },
       { label: 'Wizyty',        icon: 'calendar' },
       { label: 'Wsparcie',      icon: 'heart'    },
     ],
@@ -1146,7 +1146,7 @@ function DashboardContent() {
       'Umów wizytę':             () => setScreen('book-visit'),
       'Co zabrać na konsylium':  () => { setChecklistType('konsylium'); setScreen('checklist'); },
       'Zgłoś objaw':             () => setScreen('report-symptom'),
-      'Moje wyniki':             () => setScreen('my-results'),
+      'Baza wiedzy':             () => setScreen('knowledge-base'),
       'Wizyty':                  () => setScreen('book-visit'),
       'Wsparcie':                () => setScreen('support'),
       'Plan rehabilitacji':      () => setScreen('rehab-plan'),
@@ -1162,7 +1162,7 @@ function DashboardContent() {
   if (screen === 'documents')      return <DocumentsScreen onBack={back}/>;
   if (screen === 'book-visit')     return <BookVisit onBack={back}/>;
   if (screen === 'report-symptom') return <ReportSymptom onBack={back}/>;
-  if (screen === 'my-results')     return <MyResults onBack={back}/>;
+  if (screen === 'knowledge-base') return <KnowledgeBase onBack={back}/>;
   if (screen === 'support')        return <SupportScreen onBack={back}/>;
   if (screen === 'rehab-plan')     return <RehabPlan onBack={back}/>;
   if (screen === 'partners')            return <PartnersScreen onBack={back} onOpenChat={() => setScreen('chat')}/>;
