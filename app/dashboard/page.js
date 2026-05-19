@@ -126,8 +126,8 @@ function Icon({ name, size = 20, color = PT.plumSoft, strokeWidth = 1.8 }) {
 const STAGE_META = [
   { id: 1, label: 'Badania' },
   { id: 2, label: 'Diagnostyka' },
-  { id: 3, label: 'Leczenie operacyjne' },
-  { id: 4, label: 'Leczenie okołooperacyjne' },
+  { id: 3, label: 'Konsylium i plan' },
+  { id: 4, label: 'Leczenie aktywne' },
   { id: 5, label: 'Rehabilitacja' },
 ];
 

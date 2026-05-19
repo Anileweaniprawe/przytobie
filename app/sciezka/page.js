@@ -22,7 +22,7 @@ export default function SciezkaPage() {
       setSteps([
         { t: 'Pierwsze badanie',   d: 'Zrozum, co Cię czeka.',            done: true },
         { t: 'Diagnostyka',        d: 'Wyniki, badania obrazowe i profile.', done: true },
-        { t: 'Konsylium',          d: 'Wielodyscyplinarny zespół ustali plan.', active: true },
+        { t: 'Konsylium',          d: 'Konsylium wielodyscyplinarne ustali plan leczenia.', active: true },
         { t: 'Leczenie',           d: 'Indywidualna ścieżka terapeutyczna.' },
         { t: 'Wsparcie',           d: 'Opieka w trakcie i po leczeniu.' },
         { t: 'Rehabilitacja',      d: 'Powrót do siebie, w swoim tempie.' },
