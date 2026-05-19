@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Mark from '@/components/Mark';
 import { PT } from '@/lib/theme';
 import { SUBTYPES } from '@/lib/treatment';
 
@@ -140,7 +139,7 @@ export default function OnboardingPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         marginBottom: 36, position: 'relative', zIndex: 1,
       }}>
-        <Mark size={30}/>
+        <img src="/logo.png" alt="PrzyTobie" style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           {Array.from({ length: totalSteps }).map((_, i) => (
             <div key={i} style={{
