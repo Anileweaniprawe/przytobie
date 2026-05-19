@@ -52,7 +52,7 @@ function IOSGlassPill({ children, dark = false, style = {} }) {
       position: 'relative', overflow: 'hidden',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       boxShadow: dark
-        ? '0 2px 6px rgba(0,0,0,0.35), 0 6px 16px rgba(0,0,0,0.2)'
+        ? '0 2px 6px rgba(0,0,0,0.35), 0 6px 32px rgba(0,0,0,0.2)'
         : '0 1px 3px rgba(0,0,0,0.07), 0 3px 10px rgba(0,0,0,0.06)',
       ...style,
     }}>
@@ -98,7 +98,7 @@ function IOSNavBar({ title = 'Title', dark = false, trailingIcon = true }) {
     }}>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 16px',
+        padding: '0 32px',
       }}>
         {/* back chevron */}
         {pillIcon(
@@ -117,7 +117,7 @@ function IOSNavBar({ title = 'Title', dark = false, trailingIcon = true }) {
       </div>
       {/* large title */}
       <div style={{
-        padding: '0 16px',
+        padding: '0 32px',
         fontFamily: '-apple-system, system-ui',
         fontSize: 34, fontWeight: 700, lineHeight: '41px',
         color: text, letterSpacing: 0.4,
@@ -137,7 +137,7 @@ function IOSListRow({ title, detail, icon, chevron = true, isLast = false, dark 
   return (
     <div style={{
       display: 'flex', alignItems: 'center', minHeight: 52,
-      padding: '0 16px', position: 'relative',
+      padding: '0 32px', position: 'relative',
       fontFamily: '-apple-system, system-ui', fontSize: 17,
       letterSpacing: -0.43,
     }}>
@@ -178,7 +178,7 @@ function IOSList({ header, children, dark = false }) {
       )}
       <div style={{
         background: bg, borderRadius: 26,
-        margin: '0 16px', overflow: 'hidden',
+        margin: '0 32px', overflow: 'hidden',
       }}>{children}</div>
     </div>
   );

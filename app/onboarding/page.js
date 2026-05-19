@@ -131,7 +131,7 @@ export default function OnboardingPage() {
       width: '100%', minHeight: '100dvh', display: 'flex', flexDirection: 'column',
       paddingTop: 'max(env(safe-area-inset-top, 0px), 52px)',
       paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 32px)',
-      paddingLeft: 20, paddingRight: 20, position: 'relative',
+      paddingLeft: 32, paddingRight: 32, position: 'relative',
     }}>
 
       {/* header row */}

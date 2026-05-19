@@ -18,8 +18,7 @@ export default function DzisPage() {
       flexDirection: 'column',
       paddingTop: 'max(env(safe-area-inset-top, 0px), 52px)',
       paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 36px)',
-      paddingLeft: 20,
-      paddingRight: 20,
+      paddingLeft: 32, paddingRight: 32,
     }}>
       {/* top bar */}
       <div className="fade-up" style={{

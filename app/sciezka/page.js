@@ -40,8 +40,7 @@ export default function SciezkaPage() {
       flexDirection: 'column',
       paddingTop: 'max(env(safe-area-inset-top, 0px), 52px)',
       paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 36px)',
-      paddingLeft: 20,
-      paddingRight: 20,
+      paddingLeft: 32, paddingRight: 32,
     }}>
       <div className="fade-up" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
         <Mark size={36}/>

@@ -49,7 +49,7 @@ function KnowledgeCard({ subtype }) {
 
   return (
     <div className="fade-up" style={{
-      margin: '14px 16px 0',
+      margin: '14px 32px 0',
       background: PT.paper,
       borderRadius: 22,
       padding: '18px 20px',
@@ -252,7 +252,7 @@ function Header() {
       display: 'flex', alignItems: 'center', gap: 12,
       paddingTop: 'max(env(safe-area-inset-top, 0px), 52px)',
       paddingBottom: 4,
-      paddingLeft: 20, paddingRight: 20,
+      paddingLeft: 32, paddingRight: 32,
     }}>
       <div ref={menuRef} style={{ position: 'relative', flexShrink: 0 }}>
         <div 
@@ -410,7 +410,7 @@ function HeroCard({ data, onCTA }) {
 
   return (
     <div style={{
-      margin: '16px 16px 0',
+      margin: '16px 32px 0',
       borderRadius: 24,
       background: data.heroGradient,
       padding: '22px 22px 20px',
@@ -583,7 +583,7 @@ function PathStrip({ currentStage }) {
   return (
     <Link href={`/timeline?stage=${currentStage}&dash=${currentStage}`} style={{ textDecoration: 'none', display: 'block' }}>
       <div style={{
-        margin: '18px 16px 0',
+        margin: '18px 32px 0',
         background: PT.paper,
         borderRadius: 20,
         padding: '16px 18px',
@@ -703,7 +703,7 @@ function PathStrip({ currentStage }) {
 
 function QuickGrid({ items, onItemClick }) {
   return (
-    <div style={{ margin: '14px 16px 0' }}>
+    <div style={{ margin: '14px 32px 0' }}>
       <div style={{
         fontFamily: 'var(--font-manrope), system-ui',
         fontSize: 11, fontWeight: 600,
@@ -794,7 +794,7 @@ function SymptomCheckin() {
 
   return (
     <div style={{
-      margin: '14px 16px 0',
+      margin: '14px 32px 0',
       background: PT.paper,
       borderRadius: 22,
       padding: '18px 18px 16px',
@@ -918,7 +918,7 @@ function PostTreatmentCard() {
   return (
     <>
       <div style={{
-        margin: '14px 16px 0',
+        margin: '14px 32px 0',
         background: `linear-gradient(145deg, #EEF8F4, #C8E8DC)`,
         borderRadius: 22,
         padding: '18px 18px 16px',
@@ -1195,7 +1195,7 @@ function DashboardContent() {
 
         {/* demo strip — only visible during presentation */}
         <div style={{
-          margin: '28px 16px 0',
+          margin: '28px 32px 0',
           padding: '12px 14px',
           background: PT.night,
           borderRadius: 16,

@@ -13,8 +13,8 @@ export default function WelcomePage() {
       justifyContent: 'center',
       paddingTop: 'max(env(safe-area-inset-top, 0px), 24px)',
       paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 24px)',
-      paddingLeft: 20,
-      paddingRight: 20,
+      paddingLeft: 32,
+      paddingRight: 32,
       position: 'relative',
       overflow: 'hidden',
     }}>

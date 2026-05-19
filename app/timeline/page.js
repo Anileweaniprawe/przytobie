@@ -299,7 +299,7 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
                     fontSize: 14, fontWeight: 600,
                     letterSpacing: '-0.01em', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
-                    boxShadow: `0 8px 20px -6px ${TC.roseLine}70`,
+                    boxShadow: `0 8px 32px -6px ${TC.roseLine}70`,
                   }}
                 >
                   <Icon name="chat" size={15} color="#fff"/>
@@ -367,7 +367,7 @@ function TimelineContent() {
           display: 'flex', alignItems: 'center', gap: 12,
           paddingTop: 'max(env(safe-area-inset-top, 0px), 52px)',
           paddingBottom: 4,
-          paddingLeft: 20, paddingRight: 20,
+          paddingLeft: 32, paddingRight: 32,
         }}>
           <Link href={`/dashboard?stage=${dashStage}`} style={{ textDecoration: 'none', flexShrink: 0 }}>
             <div style={{
@@ -394,7 +394,7 @@ function TimelineContent() {
 
         {/* ── Subtitle ─────────────────────────────────── */}
         <div style={{
-          paddingLeft: 20, paddingRight: 20,
+          paddingLeft: 32, paddingRight: 32,
           paddingTop: 20, paddingBottom: 6,
         }}>
           <p style={{
@@ -408,7 +408,7 @@ function TimelineContent() {
         </div>
 
         {/* ── Progress pill ────────────────────────────── */}
-        <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 14, paddingBottom: 4 }}>
+        <div style={{ paddingLeft: 32, paddingRight: 32, paddingTop: 14, paddingBottom: 4 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: TC.roseBg,
@@ -426,7 +426,7 @@ function TimelineContent() {
         </div>
 
         {/* ── Timeline ─────────────────────────────────── */}
-        <div style={{ padding: '16px 20px 8px' }}>
+        <div style={{ padding: '16px 32px 8px' }}>
           {STAGES.map((stage, idx) => (
             <StageRow
               key={stage.id}
@@ -443,7 +443,7 @@ function TimelineContent() {
 
         {/* ── Demo switcher ────────────────────────────── */}
         <div style={{
-          margin: '16px 20px 0',
+          margin: '16px 32px 0',
           background: PT.night,
           borderRadius: 16,
           padding: '12px 14px',

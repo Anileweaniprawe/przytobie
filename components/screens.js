@@ -47,7 +47,7 @@ function ScreenHeader({ title, onBack }) {
       display: 'flex', alignItems: 'center', gap: 4,
       paddingTop: 'max(env(safe-area-inset-top, 0px), 52px)',
       paddingBottom: 8,
-      paddingLeft: 10, paddingRight: 20,
+      paddingLeft: 16, paddingRight: 32,
     }}>
       <button onClick={onBack} style={{
         width: 44, height: 44, flexShrink: 0,
@@ -72,7 +72,7 @@ function Wrap({ title, onBack, children, noPad }) {
       paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 32px)',
     }}>
       <ScreenHeader title={title} onBack={onBack}/>
-      <div style={noPad ? {} : { paddingLeft: 20, paddingRight: 20 }}>
+      <div style={noPad ? {} : { paddingLeft: 32, paddingRight: 32 }}>
         {children}
       </div>
     </div>
@@ -468,7 +468,7 @@ export function ChatScreen({ onBack, initialMessage, suggestedChips }) {
       {/* messages */}
       <div style={{
         flex: 1, overflowY: 'auto',
-        padding: '8px 20px',
+        padding: '8px 32px',
         display: 'flex', flexDirection: 'column', gap: 10,
       }}>
         {messages.map((m, i) => (
@@ -509,14 +509,14 @@ export function ChatScreen({ onBack, initialMessage, suggestedChips }) {
       <div style={{
         fontFamily: 'var(--font-manrope), system-ui',
         fontSize: 11, color: 'rgba(58,42,63,0.35)',
-        textAlign: 'center', padding: '6px 20px',
+        textAlign: 'center', padding: '6px 32px',
       }}>
         Asystentka nie zastępuje konsultacji medycznej
       </div>
 
       {/* input */}
       <div style={{
-        padding: '8px 20px',
+        padding: '8px 32px',
         paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 20px)',
         display: 'flex', gap: 10,
       }}>
@@ -808,7 +808,7 @@ export function AddVisitWizard({ onBack, onComplete }) {
                 userLocation={[51.7592, 19.4560]}
               />
               <div style={{ 
-                position: 'absolute', bottom: 32, left: 20, right: 20, zIndex: 10,
+                position: 'absolute', bottom: 32, left: 32, right: 32, zIndex: 10,
                 display: 'flex', justifyContent: 'center'
               }}>
                 <button 
@@ -830,7 +830,7 @@ export function AddVisitWizard({ onBack, onComplete }) {
               
               {/* Overlay info for map selection */}
               <div style={{
-                position: 'absolute', top: 20, left: 20, right: 20, zIndex: 10,
+                position: 'absolute', top: 20, left: 32, right: 32, zIndex: 10,
                 background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)',
                 padding: '12px 16px', borderRadius: 16, border: '1px solid rgba(58,42,63,0.1)',
                 textAlign: 'center', pointerEvents: 'none'
@@ -853,7 +853,7 @@ export function AddVisitWizard({ onBack, onComplete }) {
           </div>
 
           <SectionLabel>Wybierz dzień</SectionLabel>
-          <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 12, margin: '0 -24px', padding: '0 24px 12px 24px', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 12, margin: '0 -32px', padding: '0 32px 12px 32px', WebkitOverflowScrolling: 'touch' }}>
             {MOCK_DATES.map(d => (
               <button key={d} onClick={() => setActiveDate(d)} style={{
                 flexShrink: 0, padding: '12px 20px', borderRadius: 16, border: 'none',
@@ -1518,7 +1518,7 @@ export function PartnersScreen({ onBack, onOpenChat }) {
       <ScreenHeader title="Opieka po leczeniu" onBack={onBack}/>
 
       {/* intro */}
-      <div style={{ paddingLeft: 20, paddingRight: 20, marginBottom: 14 }}>
+      <div style={{ paddingLeft: 32, paddingRight: 32, marginBottom: 14 }}>
         <p style={{
           fontFamily: 'var(--font-manrope), system-ui',
           fontSize: 13, color: 'rgba(58,42,63,0.5)',
@@ -1534,7 +1534,7 @@ export function PartnersScreen({ onBack, onOpenChat }) {
         style={{
           display: 'flex', gap: 8,
           overflowX: 'auto',
-          paddingLeft: 20, paddingRight: 20, paddingBottom: 2,
+          paddingLeft: 32, paddingRight: 32, paddingBottom: 2,
           scrollbarWidth: 'none',
         }}
       >
@@ -1558,7 +1558,7 @@ export function PartnersScreen({ onBack, onOpenChat }) {
       </div>
 
       {/* cards */}
-      <div style={{ paddingLeft: 20, paddingRight: 20, marginTop: 18, paddingBottom: 100 }}>
+      <div style={{ paddingLeft: 32, paddingRight: 32, marginTop: 18, paddingBottom: 100 }}>
         {filtered.length === 0 ? (
           <div style={{
             display: 'flex', flexDirection: 'column',
@@ -1615,7 +1615,7 @@ export function PartnersScreen({ onBack, onOpenChat }) {
       {/* sticky bottom bar */}
       <div style={{
         position: 'sticky', bottom: 0,
-        paddingTop: 20, paddingLeft: 20, paddingRight: 20,
+        paddingTop: 20, paddingLeft: 32, paddingRight: 32,
         paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 20px)',
         background: 'linear-gradient(to bottom, transparent 0%, rgba(251,245,238,0.94) 32%, rgba(251,245,238,0.99) 100%)',
       }}>
@@ -1882,32 +1882,38 @@ export function KnowledgeBase({ onBack }) {
       </div>
 
       {/* Tags Scrollable Row */}
-      <div style={{
-        display: 'flex', gap: 8, overflowX: 'auto',
-        paddingBottom: 16, margin: '0 -20px 8px', paddingLeft: 20, paddingRight: 20,
-        scrollbarWidth: 'none',
-      }}>
+      <div 
+        className="pt-tags"
+        style={{
+          display: 'flex', gap: 8,
+          overflowX: 'auto',
+          paddingBottom: 16, 
+          margin: '0 -32px 8px', 
+          paddingLeft: 32, 
+          paddingRight: 32,
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+        }}
+      >
         <style>{`.pt-tags::-webkit-scrollbar { display: none; }`}</style>
-        <div className="pt-tags" style={{ display: 'flex', gap: 8, overflowX: 'auto', width: '100%' }}>
-          {allTags.map(tag => (
-            <button
-              key={tag}
-              onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-              style={{
-                flexShrink: 0, height: 32, borderRadius: 16,
-                padding: '0 12px', appearance: 'none', cursor: 'pointer',
-                fontFamily: 'var(--font-manrope), system-ui',
-                fontSize: 12, fontWeight: 600,
-                background: activeTag === tag ? PT.plum : 'rgba(255,255,255,0.6)',
-                color: activeTag === tag ? '#fff' : PT.plum,
-                border: activeTag === tag ? 'none' : '1px solid rgba(58,42,63,0.1)',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              #{tag}
-            </button>
-          ))}
-        </div>
+        {allTags.map(tag => (
+          <button
+            key={tag}
+            onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+            style={{
+              flexShrink: 0, height: 32, borderRadius: 16,
+              padding: '0 12px', appearance: 'none', cursor: 'pointer',
+              fontFamily: 'var(--font-manrope), system-ui',
+              fontSize: 12, fontWeight: 600,
+              background: activeTag === tag ? PT.plum : 'rgba(255,255,255,0.6)',
+              color: activeTag === tag ? '#fff' : PT.plum,
+              border: activeTag === tag ? 'none' : '1px solid rgba(58,42,63,0.1)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            #{tag}
+          </button>
+        ))}
       </div>
 
       <SectionLabel>Terminy ({filteredItems.length})</SectionLabel>
@@ -1915,7 +1921,7 @@ export function KnowledgeBase({ onBack }) {
       {/* Results List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 32 }}>
         {filteredItems.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '32px 20px', color: PT.plumSoft }}>
+          <div style={{ textAlign: 'center', padding: '32px 32px', color: PT.plumSoft }}>
             <p style={{
               fontFamily: 'var(--font-manrope), system-ui',
               fontSize: 14, marginBottom: 16
