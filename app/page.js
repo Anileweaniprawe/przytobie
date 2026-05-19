@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import Mark from '@/components/Mark';
 import { PT } from '@/lib/theme';
 
 export default function WelcomePage() {
@@ -40,8 +39,19 @@ export default function WelcomePage() {
         zIndex: 1,
       }}>
         {/* logo + tagline */}
-        <Mark size={100}/>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginTop: 20 }}>
+        <div style={{ position: 'relative', width: 140, height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img 
+            src="/logo.png" 
+            alt="PrzyTobie" 
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 12px 24px rgba(58,42,63,0.12))'
+            }} 
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginTop: 15 }}>
           <span style={{
             fontFamily: 'var(--font-manrope), system-ui',
             fontSize: 40, lineHeight: 1,
