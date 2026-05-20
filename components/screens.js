@@ -703,12 +703,12 @@ export function BookVisit({ onBack }) {
 
 // ─── 6. AddVisitWizard ────────────────────────────────────────
 const WIZARD_DOCTORS = [
-  { id: 'd1', name: 'dr M. Kowalska', spec: 'Onkolog', place: 'Centrum Onkologii', color: PT.lilac, lat: 51.7245, lng: 19.4447, rating: 4.8, reviews: 124, price: 250 },
-  { id: 'd2', name: 'dr A. Wiśniewska', spec: 'Chirurg', place: 'Poliklinika BCU', color: PT.blush, lat: 51.7589, lng: 19.4475, rating: 4.9, reviews: 310, price: 300 },
-  { id: 'd3', name: 'dr J. Nowak', spec: 'Radiolog', place: 'Szpital Wojewódzki', color: PT.salmon, lat: 51.7785, lng: 19.4673, rating: 4.5, reviews: 85, price: 200 },
-  { id: 'd4', name: 'dr K. Zieliński', spec: 'Radioterapeuta', place: 'Centrum Onkologii', color: PT.creamDeep, lat: 51.7245, lng: 19.4447, rating: 4.7, reviews: 156, price: 280 },
-  { id: 'd5', name: 'dr M. Mazur', spec: 'Chirurg onkolog', place: 'Salve Medica', color: PT.lilacDeep, lat: 51.8020, lng: 19.3900, rating: 5.0, reviews: 420, price: 350 },
-  { id: 'd6', name: 'dr E. Wójcik', spec: 'Onkolog kliniczny', place: 'Instytut CZMP', color: PT.blushDeep, lat: 51.7061, lng: 19.4831, rating: 4.6, reviews: 92, price: 220 }
+  { id: 'd1', name: 'dr M. Kowalska', spec: 'Onkolog', place: 'Centrum Onkologii', color: PT.lilac, lat: 51.7245, lng: 19.4447, rating: 4.8, reviews: 124 },
+  { id: 'd2', name: 'dr A. Wiśniewska', spec: 'Chirurg', place: 'Poliklinika BCU', color: PT.blush, lat: 51.7589, lng: 19.4475, rating: 4.9, reviews: 310 },
+  { id: 'd3', name: 'dr J. Nowak', spec: 'Radiolog', place: 'Szpital Wojewódzki', color: PT.salmon, lat: 51.7785, lng: 19.4673, rating: 4.5, reviews: 85 },
+  { id: 'd4', name: 'dr K. Zieliński', spec: 'Radioterapeuta', place: 'Centrum Onkologii', color: PT.creamDeep, lat: 51.7245, lng: 19.4447, rating: 4.7, reviews: 156 },
+  { id: 'd5', name: 'dr M. Mazur', spec: 'Chirurg onkolog', place: 'Salve Medica', color: PT.lilacDeep, lat: 51.8020, lng: 19.3900, rating: 5.0, reviews: 420 },
+  { id: 'd6', name: 'dr E. Wójcik', spec: 'Onkolog kliniczny', place: 'Instytut CZMP', color: PT.blushDeep, lat: 51.7061, lng: 19.4831, rating: 4.6, reviews: 92 }
 ];
 
 export function AddVisitWizard({ onBack, onComplete }) {
@@ -788,7 +788,6 @@ export function AddVisitWizard({ onBack, onComplete }) {
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div style={{ fontWeight: 700, color: PT.plum, fontSize: 15 }}>{doc.name}</div>
-                        <div style={{ fontWeight: 700, color: PT.plum, fontSize: 15 }}>{doc.price} zł</div>
                       </div>
                       <div style={{ fontSize: 13, color: 'rgba(58,42,63,0.6)', marginBottom: 4 }}>{doc.spec} • {doc.place}</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
