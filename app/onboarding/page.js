@@ -120,8 +120,10 @@ export default function OnboardingPage() {
     const trimmed = name.trim();
     localStorage.setItem('userName', trimmed);
     localStorage.setItem('userStage', String(stageNum));
-    if (subtype) {
+    if (hasDiagnosis && subtype) {
       localStorage.setItem('userSubtype', subtype);
+    } else if (!hasDiagnosis) {
+      localStorage.removeItem('userSubtype');
     }
     router.push('/dashboard?stage=' + stageNum);
   }

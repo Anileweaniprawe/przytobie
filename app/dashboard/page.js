@@ -18,7 +18,8 @@ import {
   AppointmentDetail, KnowledgeBase,
 } from '@/components/screens';
 
-function KnowledgeCard({ subtype }) {
+function KnowledgeCard({ subtype, stage }) {
+  if (stage < 3) return null;
   const currentSubtype = SUBTYPES.find(s => s.id === subtype);
   if (!currentSubtype || subtype === 'unknown') return null;
 
@@ -1193,7 +1194,7 @@ function DashboardContent() {
           stage === 4 ? () => setScreen('appointment-detail') : 
           stage === 5 ? () => setScreen('rehab-plan') : undefined
         }/>
-        <KnowledgeCard subtype={subtype} />
+        <KnowledgeCard subtype={subtype} stage={stage} />
         <PathStrip currentStage={stage}/>
         <QuickGrid items={data.grid} onItemClick={handleTileClick}/>
         {data.hasSymptomCheckin && <SymptomCheckin/>}
