@@ -1,6 +1,6 @@
 'use client';
 import { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { PT } from '@/lib/theme';
 
@@ -99,6 +99,7 @@ const STAGES = [
 
 // ─── Single stage row ─────────────────────────────────────────
 function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsOpen, setQuestionsOpen }) {
+  const router   = useRouter();
   const done     = stage.id < activeStage;
   const active   = stage.id === activeStage;
   const upcoming = stage.id > activeStage;
@@ -113,6 +114,10 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
 
   const labelColor    = upcoming ? 'rgba(58,42,63,0.38)' : PT.plum;
   const subtitleColor = upcoming ? 'rgba(58,42,63,0.28)' : 'rgba(58,42,63,0.5)';
+
+  const openChat = () => {
+    router.push(`/dashboard?stage=${activeStage}&screen=chat`);
+  };
 
   return (
     <div style={{ display: 'flex', alignItems: 'stretch' }}>
@@ -290,7 +295,7 @@ function StageRow({ stage, activeStage, isExpanded, onToggle, isLast, questionsO
 
                 {/* zapytaj asystentkę */}
                 <button
-                  onClick={() => console.log('open chat')}
+                  onClick={openChat}
                   style={{
                     width: '100%', appearance: 'none', border: 0,
                     background: TC.roseLine, color: '#fff',

@@ -1114,13 +1114,19 @@ function DashboardContent() {
   const [stage, setStage] = useState(initialStage);
   const [subtype, setSubtype] = useState(null);
 
+  const screenParam = searchParams.get('screen');
+  const [screen, setScreen] = useState(screenParam || 'dashboard');
+
   useEffect(() => {
     if (stageParam) localStorage.setItem('userStage', stageParam);
     const storedSubtype = localStorage.getItem('userSubtype');
     if (storedSubtype) setSubtype(storedSubtype);
   }, [stageParam]);
 
-  const [screen, setScreen] = useState('dashboard');
+  useEffect(() => {
+    if (screenParam) setScreen(screenParam);
+  }, [screenParam]);
+
   const [checklistType, setChecklistType] = useState('badanie');
   const [chatTopic, setChatTopic] = useState(null);
   const [chatChips, setChatChips] = useState(null);
@@ -1162,7 +1168,7 @@ function DashboardContent() {
   if (screen === 'documents')      return <DocumentsScreen onBack={back}/>;
   if (screen === 'book-visit')     return <BookVisit onBack={back}/>;
   if (screen === 'report-symptom') return <ReportSymptom onBack={back}/>;
-  if (screen === 'knowledge-base') return <KnowledgeBase onBack={back}/>;
+  if (screen === 'knowledge-base') return <KnowledgeBase onBack={back} onOpenChat={() => setScreen('chat')}/>;
   if (screen === 'support')        return <SupportScreen onBack={back}/>;
   if (screen === 'rehab-plan')     return <RehabPlan onBack={back}/>;
   if (screen === 'partners')            return <PartnersScreen onBack={back} onOpenChat={() => setScreen('chat')}/>;

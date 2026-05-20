@@ -1809,7 +1809,7 @@ export function AppointmentDetail({ onBack, onOpenChat }) {
 }
 
 // ─── 12. KnowledgeBase ───────────────────────────────────────
-export function KnowledgeBase({ onBack }) {
+export function KnowledgeBase({ onBack, onOpenChat }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTag, setActiveTag] = useState(null);
   const [expanded, setExpanded] = useState(null);
@@ -1927,10 +1927,7 @@ export function KnowledgeBase({ onBack }) {
               fontSize: 14, marginBottom: 16
             }}>Nie znaleziono haseł.</p>
             <button
-              onClick={() => onBack()} // In a real scenario, this might need to open chat directly, 
-              // but per handled navigation in dashboard, returning to dashboard is the simplest way 
-              // to let user pick chat. Alternatively, we could pass a setScreen prop.
-              // For now, let's just make it look like a CTA.
+              onClick={onOpenChat}
               style={{
                 appearance: 'none', border: 0,
                 background: PT.paper, color: PT.plum,
