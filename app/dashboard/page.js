@@ -185,6 +185,7 @@ const STAGE_DATA = {
       { label: 'Wsparcie',      icon: 'heart'    },
     ],
     hasSymptomCheckin: true,
+    hasPostTreatment: true,
   },
   5: {
     heroGradient: 'linear-gradient(145deg, #EEF8F4 0%, #C8E8DC 100%)',
@@ -198,7 +199,6 @@ const STAGE_DATA = {
       { label: 'Pytania do lekarza', icon: 'chat'     },
       { label: 'Zadbaj o siebie',    icon: 'sparkle'  },
     ],
-    hasPostTreatment: true,
   },
 };
 
@@ -929,12 +929,12 @@ function PostTreatmentCard() {
           fontWeight: 600, fontSize: 15,
           color: PT.plum, letterSpacing: '-0.01em',
           marginBottom: 2,
-        }}>Opieka po leczeniu</div>
+        }}>Wsparcie w leczeniu</div>
         <p style={{
           fontFamily: 'var(--font-manrope), system-ui',
           fontSize: 12, color: 'rgba(58,42,63,0.5)',
           marginBottom: 14,
-        }}>Zasoby, które mogą Ci pomóc</p>
+        }}>Sprawdzone miejsca i usługi, które pomogą Ci zadbać o siebie w trakcie terapii.</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {POST_TREATMENT_CHIPS.map((chip, i) => (
             <button 

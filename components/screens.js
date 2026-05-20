@@ -1514,7 +1514,7 @@ export function PartnersScreen({ onBack, onOpenChat }) {
     <div className="page-bg screen-enter" style={{ width: '100%', minHeight: '100dvh' }}>
       <style>{`.pt-chips::-webkit-scrollbar { display: none; }`}</style>
       <div ref={topRef}/>
-      <ScreenHeader title="Opieka po leczeniu" onBack={onBack}/>
+      <ScreenHeader title="Wsparcie w leczeniu" onBack={onBack}/>
 
       {/* intro */}
       <div style={{ paddingLeft: 32, paddingRight: 32, marginBottom: 14 }}>
@@ -1523,7 +1523,7 @@ export function PartnersScreen({ onBack, onOpenChat }) {
           fontSize: 13, color: 'rgba(58,42,63,0.5)',
           lineHeight: 1.5, margin: 0,
         }}>
-          Sprawdzone miejsca i usługi dla kobiet po leczeniu raka piersi.
+          Sprawdzone miejsca i usługi, które pomogą Ci zadbać o siebie w trakcie i po leczeniu.
         </p>
       </div>
 
